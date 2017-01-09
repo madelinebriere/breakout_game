@@ -26,6 +26,7 @@ import javafx.util.Duration;
  */
 public class BreakoutMain extends Application {
     public static final String TITLE = "Breakout Game";
+    public static final String BALL_PIC = "ball.gif";
     public static final Paint BACKGROUND = Color.WHITE;
     public static final int FRAMES_PER_SECOND = 60;
     public static final int SIZE = 400;
@@ -34,13 +35,21 @@ public class BreakoutMain extends Application {
     public static final int KEY_INPUT_SPEED = 5;
     public static final int PADDLE_Y_POS=350;
     public static final int BARRIER_OFFSET=15;
+    public static final int BALL_START_X=100;
+    public static final int BALL_START_Y=100;
+    
 
     // some things we need to remember during our game
     private Scene myScene;
-    private Ball gameBall;
-    private Rectangle paddle; //REDUNDANT
-    private int paddleSize=50;//changeable throughout game
+    private ImageView gameBall; //decision made to use myBouncer instead of self-created Ball class
+    private Rectangle paddle; 
+    private int paddleSize;//changeable throughout game
+    private double ballSize;//scaling number represents ball size
+    private int xMov; // xMov = motion in x --> 0=none, -1=left, 1=right
+	private int yMov; //yMov = motion in y --> 0=none, -1=down, 1=up
+	private int speed;
     
+	
     /**
      * Initialize what will be displayed and how it will be updated.
      */
@@ -62,17 +71,31 @@ public class BreakoutMain extends Application {
 
     // Create the game's "scene": what shapes will be in the game and their starting properties
     private Scene setupGame (int width, int height, Paint background) {
-        // create one top level collection to organize the things in the scene
+        //Set starting values for house-keeping variables
+    	paddleSize=50;
+    	ballSize = 1.2;
+    	speed=40;
+    	xMov = 1; //default moving up and to the right
+    	yMov=1;
+    	
+    	//Create gameBall as ImageView
+    	Image im = new Image(getClass().getClassLoader().getResourceAsStream(BALL_PIC));
+        gameBall = new ImageView(im);
+        gameBall.setScaleX(ballSize);
+        gameBall.setScaleY(ballSize);
+        gameBall.setX(BALL_START_X);
+        gameBall.setY(BALL_START_Y);
+    	
+    	// create one top level collection to organize the things in the scene
         Group root = new Group();
-        gameBall = new Ball();
         
         // create a place to see the shapes
         myScene = new Scene(root, width, height, background);
         
         // make some shapes and set their properties
         // x and y represent the top left corner of the ball, so center it
-        gameBall.getMyBouncer().setX(width / 2 - gameBall.getMyBouncer().getBoundsInLocal().getWidth() / 2);
-        gameBall.getMyBouncer().setY(height / 2 - gameBall.getMyBouncer().getBoundsInLocal().getHeight() / 2);
+        gameBall.setX(width / 2 - gameBall.getBoundsInLocal().getWidth() / 2);
+        gameBall.setY(height / 2 - gameBall.getBoundsInLocal().getHeight() / 2);
        
         //Draw the paddle
         paddle = 
@@ -80,7 +103,7 @@ public class BreakoutMain extends Application {
         paddle.setFill(Color.DARKSLATEBLUE);
         
         // order added to the group is the order in which they are drawn
-        root.getChildren().add(gameBall.getMyBouncer());
+        root.getChildren().add(gameBall);
         root.getChildren().add(paddle);
         
         // respond to input
@@ -94,23 +117,21 @@ public class BreakoutMain extends Application {
     private void step (double elapsedTime) {
         // update attributes
     	
-    	ImageView b = gameBall.getMyBouncer();
-    	
     	//Update location based on x and y motion
     	//move right
-    	if (gameBall.getMyXMov()==1){b.setX(b.getX() + gameBall.getMySpeed() * elapsedTime);}
+    	if (xMov==1){gameBall.setX(gameBall.getX() + speed * elapsedTime);}
     	//move left
-    	if (gameBall.getMyXMov()==-1){b.setX(b.getX() - gameBall.getMySpeed() * elapsedTime);}
+    	if (xMov==-1){gameBall.setX(gameBall.getX() - speed * elapsedTime);}
     	//move up
-    	if (gameBall.getMyYMov()==1){b.setY(b.getY() - gameBall.getMySpeed() * elapsedTime);}
+    	if (yMov==1){gameBall.setY(gameBall.getY() - speed * elapsedTime);}
     	//move down
-    	if (gameBall.getMyYMov()==-1){b.setY(b.getY() + gameBall.getMySpeed() * elapsedTime);}
+    	if (yMov==-1){gameBall.setY(gameBall.getY() + speed * elapsedTime);}
        
     	//Check that ball is still in bounds and rebound if not
-    	if(b.getX()<0){gameBall.setMyXMov(1);}//if hits left wall, bounce back
-    	if(b.getX()>(SIZE-BARRIER_OFFSET)){gameBall.setMyXMov(-1);}//if hits right wall, bounce back
-    	if(b.getY()<0){gameBall.setMyYMov(-1);} //if hits top, bounce back down
-    	if(b.getY()>(SIZE-BARRIER_OFFSET)){System.out.println("FAIL");}
+    	if(gameBall.getX()<0){xMov=1;}//if hits left wall, bounce back
+    	if(gameBall.getX()>(SIZE-BARRIER_OFFSET)){xMov = -1;}//if hits right wall, bounce back
+    	if(gameBall.getY()<0){yMov = -1;} //if hits top, bounce back down
+    	if(gameBall.getY()>(SIZE-BARRIER_OFFSET)){System.out.println("FAIL");}
     	
         
     }
