@@ -1,0 +1,67 @@
+Breakout plan
+Authored by: Madeline Briere (mfb33)
+
+My version of Breakout will be called Fido's Breakout, and will be largely dog-themed. Fido the dog, the main character, will use the paddle to clear away obstacles (the blocks)
+in his way. 
+
+Part 1: Previous renditions of this game
+I particularly enjoyed the PowBall version of Breakout, partially because it incorporates modern graphics to create an aesthetically pleasing game, and partially because of the way in which it increases complexity by level. 
+I would like to incorporate both major features (appealing graphics and increasing complexity) in my game, though likely not quite to the same degree. 
+I also enjoyed the Worms version of Breakout – the incorporation of a character (the worm) into the game, falling power-ups collected by the character and the creation of multiple game balls are all elements of game play I would 
+ideally like to include in my version of Breakout. They add complexity to the game and separate it from other similar versions of the game.
+Finally, I enjoyed the Pinball version of Breakout because it incorporated indestructible obstacles that the ball could bounce off of, giving the player more bouncing leverage than just the walls. 
+
+Part 2: General Description of Levels
+My game is a Breakout spin-off in that the player controls a paddle (using the left and right keyboard keys) to bounce a ball, trying to destroy all of the destructible blocks on each level and avoid letting their ball fall off the bottom of the screen. 
+Players wrack up points when they destroy blocks and catch certain power-ups.
+As is commonplace with modern games, my version will become more and more difficult as you pass more levels. I hope to increase difficulty/complexity in at least four ways:
+1)	The speed of the ball will increase with each consecutive level, making it harder and harder to stop it from going off the bottom of the screen
+2)	The block grid becomes more complicated, with more blocks and a greater variety of blocks (including blocks that, for instance, drop different power-ups)
+3)	The paddle will gain a new ability with each level
+	a.	Level one: Ball bounces differently on the left, middle and right portions of the paddle
+	b.	Level two: Side portal appears allowing paddle to jump from side to side
+	c.	Level three: Paddle speeds up when traveling in same direction (“gains momentum”)
+4)	As the levels increase, more obstacles will fall from the top of the screen towards the paddle, making it increasingly more difficult to avoid getting hit and losing a life (see “Something Extra”) 
+I intend to place these blocks by row and column, reading in from a text file with a string of the desired picture file stored by row and column. For instance, level one will have blocks as distributed by:
+
+normal.gif normal.gif normal.gif normal.gif normal.gif normal.gif
+normal.gif normal.gif normal.gif normal.gif normal.gif normal.gif
+
+This means that two rows of six normal blocks will be drawn at the top of the game screen.
+The next levels will have more rows of blocks, with more interesting blocks. For example, level two will have added complexity by drawing the following distribution:
+
+normal.gif normal.gif normal.gif normal.gif normal.gif normal.gif
+normal.gif strong.gif normal.gif normal.gif strong.gif normal.gif
+normal.gif concrete.gif normal.gif normal.gif concrete.gif normal.gif
+
+This means that the bottom-most row of blocks is “protected” by two concrete blocks and two strong blocks are embedded in the grid structure.
+ 
+
+Part 3: Blocks
+I intend to include at least four different types of blocks:
+1)	A “normal” block that is cleared after one hit, rewarding the player with a set number of points (e.g., 10 points)
+2)	A “strong” block that is cleared after TWO hits, rewarding the player with a set number of points (same number as the normal block)
+3)	A “concrete” block that cannot be cleared from the game (it remains as an obstacle for the entire level)
+4)	A “double” block that is cleared after one hit, just like a “normal” block, but rewards the player with double the points (e.g., 20 points)
+
+Part 4: Power-Ups
+I intend to include at least three power-ups that drop from blocks and activate when caught:
+1)	Paddle size increase – A power-up that increases the size of the paddle temporarily
+2)	Life power-up – A power-up that gives you an extra life
+3)	Point power-up – A power-up that gives you a set number of extra points
+I may add more (e.g., laser beam power-up) if there is time, but these would be add-ons. The three power-ups listed above are the ones I have deemed most important.
+
+Part 5: Cheat keys
+The basic cheat keys I plan to include are as follows:
+1)	When you press a number, the game should take you to that level (unless it is not a valid level)
+2)	When you press L (for lives), you get an extra life
+3)	When you press P (for points), you get an extra point
+4)	When you press N (for new game), you restart the entire game and begin at level one again
+5)	When you press R (for reset), the ball and paddle return to their starting positions
+
+Part 6: Something extra
+As my “something extra” element, I will include obstacles that fall from the top of the page to the bottom of the page. 
+If these obstacles hit the paddle, you lose a life and the level resets. 
+This is a substantial change on a game design level because it adds an extra layer of difficulty for the player.
+This is a substantial change on a programming level because it will require the addition of an entirely new subset of elements to the screen and 
+the constant update of their positions.
