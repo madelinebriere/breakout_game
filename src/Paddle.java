@@ -8,16 +8,14 @@ public class Paddle extends GamePiece{
 
     public static final String PADDLE_PIC = "paddle.gif";
     public static final String LONG_PADDLE_PIC="longpaddle.gif";
-	public static final int PADDLE_X_POS=BreakoutMain.SIZE/2;
-    public static final int PADDLE_Y_POS=BreakoutMain.SIZE-50;
 	
 	public Paddle(double x, double y, String type) {
 		super(x, y, type);
 	}
 	
-	public static Paddle buildStartPaddle()
+	public static Paddle buildStartPaddle(int size)
 	{
-		return new Paddle(PADDLE_X_POS, PADDLE_Y_POS, PADDLE_PIC);
+		return new Paddle(size/2, size-50, PADDLE_PIC);
 	}
 	
 	

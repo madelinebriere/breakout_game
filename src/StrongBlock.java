@@ -12,9 +12,10 @@ public class StrongBlock extends Block{
 	}
 
 	@Override
-	public void handleCollision() {
+	public boolean handleCollision() {
 		myHits--;
-		if(myHits==0){isDead=true;}
+		if(myHits==0){return true;}
+		else{return false;}
 	}
 
 }

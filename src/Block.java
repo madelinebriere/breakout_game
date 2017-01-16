@@ -17,16 +17,15 @@ public abstract class Block extends GamePiece{
 	
 	protected int myHits; //how many 
 	protected int myPoints;
-	protected boolean isDead;
 
 	public Block(double row, double col, String type) {
 		super(col*BRICK_COL_INC, row*BRICK_ROW_INC, type);
-		isDead=false;
 	}
 	
-	public abstract void handleCollision(); 
+	public abstract boolean handleCollision(); 
 	//Each try of block must react to a collision in a unique way
 	//Changes hits based on the type of block it is (e.g., if concrete, no change)
+	//returns whether its destroyed or not
 	
 	
 	@Override
@@ -52,12 +51,5 @@ public abstract class Block extends GamePiece{
 		this.myPoints = myPoints;
 	}
 
-	public boolean isDead() {
-		return isDead;
-	}
-
-	public void setDead(boolean isDead) {
-		this.isDead = isDead;
-	}
 
 }

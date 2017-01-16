@@ -12,9 +12,9 @@ public class NormalBlock extends Block{
 	}
 
 	@Override
-	public void handleCollision() {
+	public boolean handleCollision() {
 		myHits--;
-		isDead=true;
+		return true;
 	}
 
 }

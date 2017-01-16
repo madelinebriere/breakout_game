@@ -6,34 +6,28 @@ public class Ball extends GamePiece{
     public static final int BALL_START_X=300;
     public static final int BALL_START_Y=300;
     public static final int START_X_MOV=0;
-    public static final int START_Y_MOV=2; //start with ball moving up
+    public static final int START_Y_MOV=3; //start with ball moving up
     public static final String BALL_PIC = "dogball.gif";
 	
 	private int myXMov; //X velocity
 	private int myYMov; //Y velocity
-	private boolean isDead;
 
 	public Ball(double x, double y, int xMov, int yMov)
 	{
 		super(x,y,BALL_PIC);
 		myXMov=xMov;
 		myYMov=yMov;
-		isDead=false;
 	}
 	
     public static Ball buildStartBall()
     {
     	return new Ball(BALL_START_X, BALL_START_Y, START_X_MOV, START_Y_MOV);
     }
+
+    public boolean ballBelowPaddle(Paddle p){
+    	return this.getY()>p.getY();
+    }
     
-    public boolean isDead() {
-		return isDead;
-	}
-
-	public void setDead(boolean isDead) {
-		this.isDead = isDead;
-	}
-
 	public void paddleCheck(Paddle p)
     {
     	 switch (paddleHitLoc(p)) //rebound ball if 1,2 or 3 (impact), 0 if none
@@ -68,7 +62,7 @@ public class Ball extends GamePiece{
     	
     	if(collide(paddle)) //ball hits paddle
     	{
-    		setMyYMov(-1*getMyYMov()); //ball moves up no matter what
+    		setMyYMov(-1*Math.abs(getMyYMov())); //ball moves up no matter what
     		
     		if(bx<(px+pw/3)) {return 1;} //ball hits left side, bounce up and to left
     		else if(bx<(px+(2*pw/3))){return 2;} //ball hits middle, go straight up
@@ -78,28 +72,9 @@ public class Ball extends GamePiece{
     	return 0; //default meaning no impact
     	
     }
-    
-    /*
-     * Check if ball has hit any bricks
-     */
-    public void brickCheck(ArrayList<Block> myBlocks)
-    {
-	    boolean brickHit=false;
-    	for(Block bl: myBlocks)
-	    {
-	    	if(collide(bl) && !bl.isDead())
-	    	{
-	    		this.handleCollision(bl); //Ball handles collision
-	    		if(!brickHit){
-	    			bl.handleCollision(); //Block handles collision
-	    			brickHit = true;//ensure that the ball cannot hit two bricks and have same velocity
-	    		}
-	    	}
-	    }
-	    
-    }
  
-    public void wallCheck(double size)
+    //return true if the ball has fallen off the bottom of the screen
+    public boolean wallCheck(double size)
     {
 	    	//ball attributes
 	   	double bx = getX();
@@ -111,8 +86,8 @@ public class Ball extends GamePiece{
 	   	if(bx<0){setMyXMov(1*getNonZeroSpeed());}//if hits left wall, bounce back
 	   	if(bx+width>size){setMyXMov(-getNonZeroSpeed());}//if hits right wall, bounce back
 	   	if(by<0){setMyYMov(1*getNonZeroSpeed());} //if hits top, bounce back down
-	   	if(by+height>size){isDead=true;} // if passes through bottom, this ball "is dead" and a new one must be created
-    	
+	   	if(by+height>size){return true;} // if passes through bottom, this ball "is dead" and a new one must be created
+    	return false;
     }
     
     public void handleCollision(Block b){
