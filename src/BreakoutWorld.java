@@ -50,7 +50,6 @@ public class BreakoutWorld {
     public static final int PADDLE_STEP=10;//step made by paddle each time left or right key is hit
  
     // some things we need to remember during our game
-    private Scene myScene;
     private Text myPoints;
     
     /*All of the following number variables must be POSITIVE numbers*/
@@ -58,9 +57,10 @@ public class BreakoutWorld {
     private int myLevel; //must be number 1 - 4
     private int myTotal; //total score
     
-    private ArrayList<Block> myBlocks; //blocks in game
+    private ArrayList<Block> myBlocks = new ArrayList<Block>(); //blocks in game
     private Ball myBall; //decision made to use myBouncer instead of self-created Ball class
     private Paddle myPaddle;
+    private InfoBox myBox;
 	
 	/** The JavaFX Scene as the game surface */
     private Scene gameSurface;
@@ -103,7 +103,9 @@ public class BreakoutWorld {
                 @Override
                 public void handle(javafx.event.ActionEvent event) {
  
-                    // update actors
+                    updateBox();
+                	
+                	// update actors
                     updateSprites();
  
                     // check for collision
@@ -146,6 +148,7 @@ public class BreakoutWorld {
         // Setup Game input
         setupInput(primaryStage);
         addParts();
+        addBox();
     }
     
     private void addParts(){
@@ -173,11 +176,32 @@ public class BreakoutWorld {
 
     public void setLists()
     {
-    	 myBlocks = BlockReader.readBlocks(myLevel);
-    	 myBall = Ball.buildStartBall();
-    	 myPaddle = Paddle.buildStartPaddle(SIZE);
+    	 myBlocks = BlockReader.readBlocks(myLevel); //blocks dependent on level
+    	 myBall = Ball.buildStartBall(myLevel); //ball speed dependent on level
+    	 myPaddle = Paddle.buildStartPaddle(SIZE); //paddle dependent upon size of frame
     }
  
+    public InfoBox setBoxValues(){
+    	InfoBox info = new InfoBox(SIZE);
+    	info.setLevel(myLevel);
+    	info.setLives(myLives);
+    	info.setPoints(myTotal);
+    	return info;
+    	
+    }
+    
+    public void addBox(){
+    	myBox = setBoxValues();
+    	getSceneNodes().getChildren().add(myBox.getMyText());
+    }
+    
+    public void updateBox(){
+    	if(myBox.changed(myLevel, myTotal, myLives))//only update if something has changed
+    	{
+	    	getSceneNodes().getChildren().remove(myBox.getMyText());
+	    	addBox();
+    	}
+    }
     
     public void setupInput(Stage stage)
     {
@@ -221,19 +245,27 @@ public class BreakoutWorld {
     }
 
     public void checkLevel(){
-    	if(numBlocks()==0){
-    		myLevel++;
-    		gameManager.removeAllPieces();
-    		getSceneNodes().getChildren().clear();
-        	setLists();
-        	addParts();
+    	if(numBlocks()==0){//if not more blocks
+    		levelUp();
     	}
-    	if(myBall.ballBelowPaddle(myPaddle)){levelReset();}
+    	if(myBall.ballBelowPaddle(myPaddle)){//if ball below paddle
+    		levelReset();
+    	}
     }
+    
+    private void levelUp(){
+    	myLevel++;
+		gameManager.removeAllPieces();
+		getSceneNodes().getChildren().clear();
+    	setLists();//reset lists
+    	addParts(); //add items to screen
+    }
+    
     
     private int numBlocks(){
     	int numBlocks=0;
-    	if(!myBlocks.isEmpty())
+    	if(myTotal==0){return 1;}//no points made, no blocks could be removed
+    	if(!(myBlocks.size()==0))//if there are no blocks and it is not before initialization
     	{
 	    	for(Block b: myBlocks) {
 	    		if(b!=null && !b.getClass().getName().equals("ConcreteBlock")){numBlocks++;}
@@ -283,7 +315,7 @@ public class BreakoutWorld {
     		handleFail();
     	}
     	else{
-    		myBall = Ball.buildStartBall();
+    		myBall = Ball.buildStartBall(myLevel);
     		myPaddle = Paddle.buildStartPaddle(SIZE);
     		gameManager.addPieces(myBall,myPaddle);
     		getSceneNodes().getChildren().add(myBall.getMyImage());
@@ -335,7 +367,9 @@ public class BreakoutWorld {
                  if (pieceA instanceof Ball && pieceB instanceof Block) {
                 	 if(((Block)pieceB).handleCollision()) //if the block is destroyed
                 	 {
-	                	 getGameManager().addPiecesToBeRemoved(pieceB);
+	                	 ((Ball)pieceA).blockBounce((Block)pieceB);
+	                	 myTotal+=((Block)pieceB).getMyPoints();
+                		 getGameManager().addPiecesToBeRemoved(pieceB);
 	                	 getSceneNodes().getChildren().remove(pieceB.getMyImage()); //remove block
 	                	 myBlocks.remove(pieceB);
                 	 }

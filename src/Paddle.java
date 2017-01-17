@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 public class Paddle extends GamePiece{
 
+	public static final int PADDLE_STEP=15;
 	/**
 	 * Largely the same as GamePiece, included for flexibility and consistency
 	 */
@@ -21,11 +22,11 @@ public class Paddle extends GamePiece{
 	
 	
 	public void moveRight(){
-		this.setX(getX()+10);
+		this.setX(getX()+PADDLE_STEP);
 	}
 	
 	public void moveLeft(){
-		this.setX(getX()-10);
+		this.setX(getX()-PADDLE_STEP);
 	}
 
 	@Override

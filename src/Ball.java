@@ -8,6 +8,7 @@ public class Ball extends GamePiece{
     public static final int START_X_MOV=0;
     public static final int START_Y_MOV=3; //start with ball moving up
     public static final String BALL_PIC = "dogball.gif";
+    public static final int PADDLE_BUFFER=5;
 	
 	private int myXMov; //X velocity
 	private int myYMov; //Y velocity
@@ -19,9 +20,9 @@ public class Ball extends GamePiece{
 		myYMov=yMov;
 	}
 	
-    public static Ball buildStartBall()
+    public static Ball buildStartBall(int level)
     {
-    	return new Ball(BALL_START_X, BALL_START_Y, START_X_MOV, START_Y_MOV);
+    	return new Ball(BALL_START_X, BALL_START_Y, START_X_MOV, START_Y_MOV+level-1);
     }
 
     public boolean ballBelowPaddle(Paddle p){
@@ -90,25 +91,45 @@ public class Ball extends GamePiece{
     	return false;
     }
     
-    public void handleCollision(Block b){
-    	double x = this.getX();
-    	double y = this.getY();
-    	int xMov = this.getMyXMov();
-    	int yMov = this.getMyYMov();
+    /**
+     * Troubleshoot
+     * @param b
+     */
+    public void blockBounce(Block b){
+    	if(bottom(b)||top(b)){setMyYMov(-getMyYMov());}
+    	else if(left(b)||right(b)){setMyXMov(-getMyXMov());}
     	
-    	double bx = b.getX();
-    	double by = b.getY();
-    	double bw = b.getWidth();
-    	double bh = b.getHeight();
-    	
-    	if(xMov!=0 && yMov==0){setMyXMov(-xMov);}
-    	if(xMov==0 && yMov!=0){setMyYMov(-yMov);}
-    	
-    	/**
-    	 * 
-    	 * TODO: FINISH LOGIC
-    	 */
+/*
+ *     finish logic
+ */
     }
+    
+    //Fix logic
+    public boolean bottom(Block b){
+    	return verticalColumn(b) && getY()>b.getCenterY() && getY()<b.getY()+b.getHeight();
+    }
+    
+    public boolean top(Block b){
+    	return verticalColumn(b) && getY()<b.getCenterY() && getY()>b.getY();
+    }
+    
+    public boolean left(Block b){
+    	return horizontalColumn(b) && getX()<b.getCenterX() && getX()>b.getX();
+    }
+    
+    public boolean right(Block b){
+    	return horizontalColumn(b) && getX()>b.getCenterX() && getX()<b.getX()+b.getWidth();
+     }
+    //Does the ball hit the top or bottom edge?
+    public boolean verticalColumn(Block b){
+    	return getCenterX()>=b.getX() && getCenterX()<=(b.getX()+b.getWidth());
+    }
+    
+    //Does the ball hit the left or right edge
+    public boolean horizontalColumn(Block b){
+    	return getCenterY()>=b.getY() && getCenterY()<=(b.getY()+b.getHeight());
+    }
+    
     
     //Move ball
 	@Override

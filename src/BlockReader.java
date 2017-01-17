@@ -10,7 +10,7 @@ public class BlockReader {
     	File file= new File("");
     	ArrayList<Block> toRet = new ArrayList<Block>();
     	
-    	if(level==1){file = new File("src/blocks1.txt");}
+    	if(level==1){file = new File("src/blocks3.txt");}
     	if(level==2){file = new File("src/blocks2.txt");}
     	if(level==3){file = new File("src/blocks3.txt");}
     	if(level==4){file = new File("src/blocks4.txt");}
