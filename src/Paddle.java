@@ -2,7 +2,6 @@ import java.util.ArrayList;
 
 public class Paddle extends GamePiece{
 
-	public static final int PADDLE_STEP=15;
 	/**
 	 * Largely the same as GamePiece, included for flexibility and consistency
 	 */
@@ -16,17 +15,7 @@ public class Paddle extends GamePiece{
 	
 	public static Paddle buildStartPaddle(int size)
 	{
-		return new Paddle(size/2, size-50, PADDLE_PIC);
-	}
-	
-	
-	
-	public void moveRight(){
-		this.setX(getX()+PADDLE_STEP);
-	}
-	
-	public void moveLeft(){
-		this.setX(getX()-PADDLE_STEP);
+		return new Paddle(size/2, size-80, PADDLE_PIC);
 	}
 
 	@Override

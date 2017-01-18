@@ -1,22 +1,38 @@
+import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class InfoBox{
 
 	private Text myText;
+	private Rectangle myBox;
 	private int myLevel=0;
 	private int myLives=0;
 	private int myPoints=0;
 	
 
 	public InfoBox(int size) {
-		Text text = new Text(10,size-60, "");
-		text.setFill(Color.BLUE);
+		Text text = new Text(10,size-65, "");
+		text.setFill(Color.ALICEBLUE);
 		text.setFont(new Font(15));
 		myText = text;
+		myBox = new Rectangle(5, size-65,90,60);
+		myBox.setFill(Color.DARKCYAN);
+		myBox.setArcWidth(7);
+		myBox.setArcHeight(7);;
+		myBox.setStroke(Color.BLACK);
 	}
 	
+	public Rectangle getMyBox() {
+		return myBox;
+	}
+
+	public void setMyBox(Rectangle myBox) {
+		this.myBox = myBox;
+	}
+
 	public boolean changed(int level, int points, int lives)
 	{
 		if(level!=myLevel || points!=myPoints || lives!=myLives){return true;}

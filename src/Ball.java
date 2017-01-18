@@ -1,5 +1,10 @@
 import java.util.ArrayList;
 
+import javafx.geometry.Bounds;
+import javafx.scene.shape.Rectangle;
+
+
+
 public class Ball extends GamePiece{
 
 	  //Ball variables
@@ -8,7 +13,9 @@ public class Ball extends GamePiece{
     public static final int START_X_MOV=0;
     public static final int START_Y_MOV=3; //start with ball moving up
     public static final String BALL_PIC = "dogball.gif";
-    public static final int PADDLE_BUFFER=5;
+    public static final int BUFFER=1; //buffer when detecting ball on edges of block
+    public static final int BACKOUT=5; //steps that ball moves away from block upon hitting it
+    //Used to keep ball from registering a block more than once (e.g., a strong block)
 	
 	private int myXMov; //X velocity
 	private int myYMov; //Y velocity
@@ -20,13 +27,13 @@ public class Ball extends GamePiece{
 		myYMov=yMov;
 	}
 	
-    public static Ball buildStartBall(int level)
+    public static Ball buildStartBall(int size, int level)
     {
-    	return new Ball(BALL_START_X, BALL_START_Y, START_X_MOV, START_Y_MOV+level-1);
+    	return new Ball(size/2, size/2, START_X_MOV, START_Y_MOV+level-1);
     }
 
     public boolean ballBelowPaddle(Paddle p){
-    	return this.getY()>p.getY();
+    	return (this.getCenterY())>p.getY();
     }
     
 	public void paddleCheck(Paddle p)
@@ -67,7 +74,7 @@ public class Ball extends GamePiece{
     		
     		if(bx<(px+pw/3)) {return 1;} //ball hits left side, bounce up and to left
     		else if(bx<(px+(2*pw/3))){return 2;} //ball hits middle, go straight up
-    		else if(bx<(px+pw)){return 3;}//ball hits left, bounce up and to right
+    		else {return 3;}//ball hits left, bounce up and to right
     		
     	}
     	return 0; //default meaning no impact
@@ -96,40 +103,46 @@ public class Ball extends GamePiece{
      * @param b
      */
     public void blockBounce(Block b){
-    	if(bottom(b)||top(b)){setMyYMov(-getMyYMov());}
-    	else if(left(b)||right(b)){setMyXMov(-getMyXMov());}
-    	
+    	if(overlapBottom(b)){
+    		setMyYMov(Math.abs(getMyYMov()));
+    	}
+    	else if(overlapTop(b)){
+    		setMyYMov(-Math.abs(getMyYMov()));
+    	}
+    	if(overlapLeft(b)){
+    		setMyXMov(-Math.abs(getMyXMov()));
+    	}
+    	else if (overlapRight(b)){
+    		setMyXMov(Math.abs(getMyXMov()));
+    	}
 /*
  *     finish logic
  */
     }
     
-    //Fix logic
-    public boolean bottom(Block b){
-    	return verticalColumn(b) && getY()>b.getCenterY() && getY()<b.getY()+b.getHeight();
+    public boolean overlapBottom(Block b){
+    	Rectangle bottom = new Rectangle(b.getX()-BUFFER, b.getY()+b.getHeight()-BUFFER, b.getWidth()+2*BUFFER, 2*BUFFER);
+    	Bounds bounds = bottom.getBoundsInLocal();
+    	return bounds.intersects(this.getMyImage().getBoundsInLocal());
     }
     
-    public boolean top(Block b){
-    	return verticalColumn(b) && getY()<b.getCenterY() && getY()>b.getY();
+    public boolean overlapTop(Block b){
+    	Rectangle top= new Rectangle(b.getX()-BUFFER, b.getY()-BUFFER, b.getWidth()+2*BUFFER, 2*BUFFER);
+    	Bounds bounds = top.getBoundsInLocal();
+    	return bounds.intersects(this.getMyImage().getBoundsInLocal());
     }
     
-    public boolean left(Block b){
-    	return horizontalColumn(b) && getX()<b.getCenterX() && getX()>b.getX();
+    public boolean overlapLeft(Block b){
+    	Rectangle left= new Rectangle(b.getX()-BUFFER, b.getY()-BUFFER, 2*BUFFER, b.getHeight()+2*BUFFER);
+    	Bounds bounds = left.getBoundsInLocal();
+    	return bounds.intersects(this.getMyImage().getBoundsInLocal());
     }
     
-    public boolean right(Block b){
-    	return horizontalColumn(b) && getX()>b.getCenterX() && getX()<b.getX()+b.getWidth();
-     }
-    //Does the ball hit the top or bottom edge?
-    public boolean verticalColumn(Block b){
-    	return getCenterX()>=b.getX() && getCenterX()<=(b.getX()+b.getWidth());
+    public boolean overlapRight(Block b){
+    	Rectangle right= new Rectangle(b.getX()+b.getWidth()-BUFFER, b.getY()-BUFFER, 2*BUFFER, b.getHeight()+2*BUFFER);
+    	Bounds bounds = right.getBoundsInLocal();
+    	return bounds.intersects(this.getMyImage().getBoundsInLocal());
     }
-    
-    //Does the ball hit the left or right edge
-    public boolean horizontalColumn(Block b){
-    	return getCenterY()>=b.getY() && getCenterY()<=(b.getY()+b.getHeight());
-    }
-    
     
     //Move ball
 	@Override

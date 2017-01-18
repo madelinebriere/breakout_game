@@ -12,15 +12,18 @@ public abstract class Block extends GamePiece{
 
 	public static final int BLOCK_POINTS=10;
 	//Brick grid variables
-    public static final double BRICK_ROW_INC = 30; //distance between rows
-    public static final double BRICK_COL_INC = 85; // distance between cols
+    public static final double BRICK_ROW_INC = 25; //distance between rows
+    public static final double BRICK_COL_INC = 70; // distance between cols
 	
 	protected int myHits; //how many 
 	protected int myPoints;
+	protected Powerup myPower;
 
 	public Block(double row, double col, String type) {
 		super(col*BRICK_COL_INC, row*BRICK_ROW_INC, type);
+		myPower=null;
 	}
+	
 	
 	public abstract boolean handleCollision(); 
 	//Each try of block must react to a collision in a unique way
@@ -49,6 +52,14 @@ public abstract class Block extends GamePiece{
 
 	public void setMyPoints(int myPoints) {
 		this.myPoints = myPoints;
+	}
+	
+	public Powerup getMyPower() {
+		return myPower;
+	}
+
+	public void setMyPower(Powerup myPower) {
+		this.myPower = myPower;
 	}
 
 

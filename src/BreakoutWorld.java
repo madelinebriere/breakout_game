@@ -1,7 +1,5 @@
 import java.util.ArrayList;
 
-import com.sun.prism.paint.Color;
-
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -10,6 +8,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -31,7 +30,12 @@ import javafx.util.Duration;
 
 public class BreakoutWorld {
  
-	public static final int SIZE = 600;
+	public static final Color COLOR_1= Color.ALICEBLUE;
+	public static final Color COLOR_2=Color.LIGHTCYAN;
+	public static final Color COLOR_3=Color.LIGHTBLUE;
+	public static final Color COLOR_4=Color.LIGHTSKYBLUE;
+	
+	public static final int SIZE = 500;
 	
 	//Paddle power levels
     public static final int PORTAL_LEVEL = 2;//level where paddle is able to transport from one side to other
@@ -47,7 +51,7 @@ public class BreakoutWorld {
     public static final int TEXT_Y=SIZE-20;
     
     //Misc variables
-    public static final int PADDLE_STEP=10;//step made by paddle each time left or right key is hit
+    public static final int PADDLE_STEP=5;//step made by paddle each time left or right key is hit
  
     // some things we need to remember during our game
     private Text myPoints;
@@ -61,6 +65,9 @@ public class BreakoutWorld {
     private Ball myBall; //decision made to use myBouncer instead of self-created Ball class
     private Paddle myPaddle;
     private InfoBox myBox;
+    
+    private boolean leftHold=false;
+    private boolean rightHold=false;
 	
 	/** The JavaFX Scene as the game surface */
     private Scene gameSurface;
@@ -103,26 +110,23 @@ public class BreakoutWorld {
                 @Override
                 public void handle(javafx.event.ActionEvent event) {
  
-                    updateBox();
-                	
+                    if(myBall!=null & myPaddle!=null){//easy check to avoid any nullpointers
+                	updateBox();
                 	// update actors
                     updateSprites();
- 
                     // check for collision
                     checkCollisions();
- 
                     //New level?
                     checkLevel();
-                    
                     // removed dead things
-                    cleanupPieces();
+                    cleanupPieces();}
  
                 }
         }); // oneFrame
  
         // sets the game world's game loop (Timeline)
         Timeline animation = new Timeline();
-        animation.setCycleCount(Timeline.INDEFINITE);
+        animation.setCycleCount(Animation.INDEFINITE);
         animation.getKeyFrames().add(oneFrame);
         animation.play();
         setGameLoop(animation);
@@ -143,26 +147,38 @@ public class BreakoutWorld {
         // Create the scene
         setSceneNodes(new Group());
         setGameSurface(new Scene(getSceneNodes(), SIZE, SIZE));
+        getGameSurface().setFill(COLOR_1);
         primaryStage.setScene(getGameSurface());
         
         // Setup Game input
         setupInput(primaryStage);
         addParts();
-        addBox();
     }
     
     private void addParts(){
-    	getGameManager().addPieces(myBall);
-        getSceneNodes().getChildren().add(myBall.getMyImage());
-        
-        getGameManager().addPieces(myPaddle);
-        getSceneNodes().getChildren().add(myPaddle.getMyImage());
-        
-        for(Block b: myBlocks)
-        {
-        	getGameManager().addPieces(b);
-        	getSceneNodes().getChildren().add(b.getMyImage());
-        }
+    	addPiece(myBall);
+        addPiece(myPaddle);
+        addPieces(myBlocks);
+        addBox();
+    }
+    
+    private void addPiece(GamePiece piece){
+    	getGameManager().addPieces(piece);
+        getSceneNodes().getChildren().add(piece.getMyImage());
+    }
+    
+    private <T extends GamePiece> void addPieces(ArrayList<T> pieces){
+    	for(GamePiece g: pieces){addPiece(g);}
+    }
+    
+    private void autoRemovePiece(GamePiece piece){
+    	getGameManager().removePieces(piece); //remove old ball and paddle
+    	getSceneNodes().getChildren().remove(piece.getMyImage());
+    }
+    
+    private void delayedRemovePiece(GamePiece piece){
+    	getGameManager().addPiecesToBeRemoved(piece); //remove old ball and paddle
+    	getSceneNodes().getChildren().remove(piece.getMyImage());
     }
     
     private void setStartVars()
@@ -177,7 +193,7 @@ public class BreakoutWorld {
     public void setLists()
     {
     	 myBlocks = BlockReader.readBlocks(myLevel); //blocks dependent on level
-    	 myBall = Ball.buildStartBall(myLevel); //ball speed dependent on level
+    	 myBall = Ball.buildStartBall(SIZE, myLevel); //ball speed dependent on level
     	 myPaddle = Paddle.buildStartPaddle(SIZE); //paddle dependent upon size of frame
     }
  
@@ -192,13 +208,15 @@ public class BreakoutWorld {
     
     public void addBox(){
     	myBox = setBoxValues();
+    	getSceneNodes().getChildren().add(myBox.getMyBox());
     	getSceneNodes().getChildren().add(myBox.getMyText());
     }
     
     public void updateBox(){
-    	if(myBox.changed(myLevel, myTotal, myLives))//only update if something has changed
+    	if(myBox!=null && myBox.changed(myLevel, myTotal, myLives))//only update if something has changed
     	{
 	    	getSceneNodes().getChildren().remove(myBox.getMyText());
+	    	getSceneNodes().getChildren().remove(myBox.getMyBox());
 	    	addBox();
     	}
     }
@@ -206,23 +224,56 @@ public class BreakoutWorld {
     public void setupInput(Stage stage)
     {
         // respond to input
-        stage.getScene().setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+        stage.getScene().setOnKeyPressed(e -> handlePressKeyInput(e.getCode()));
+        stage.getScene().setOnKeyReleased(e -> handleReleaseKeyInput(e.getCode()));
         stage.getScene().setOnMouseClicked(e -> handleMouseInput(e.getX(), e.getY()));
         
     }
     private Object handleMouseInput(double x, double y) {
-		// TODO Auto-generated method stub
+		//No implementation in current version
 		return null;
 	}
 
-	private void handleKeyInput(KeyCode code) {
+	private void handlePressKeyInput(KeyCode code) {
 		//Controls for very first paddle are right and left keys
     	//Room left to add additional keys for extra paddles if necessary, not currently implemented
-    	if (code == KeyCode.RIGHT) {//move paddle right
+		if (code == KeyCode.RIGHT) {//move paddle right
     		moveRight(myPaddle);
+    		rightHold=!rightHold;
     	}
     	if (code == KeyCode.LEFT) {//move paddle left
     		moveLeft(myPaddle);
+    		leftHold=!leftHold;
+    	}
+    	if (code == KeyCode.L){
+    		myLives++;
+    	}
+    	if (code == KeyCode.P){
+    		myTotal++;
+    	}
+    	if (code == KeyCode.DIGIT1){
+    		levelUp(1);
+    	}
+    	if (code == KeyCode.DIGIT2){
+    		levelUp(2);
+    	}
+    	if (code==KeyCode.DIGIT3){
+    		levelUp(3);
+    	}
+    	if(code==KeyCode.DIGIT4){
+    		levelUp(4);
+    	}
+	}
+	
+	/*
+	 * Called when key is RELEASED
+	 * Only relevant for left and right (so that paddle moves when you press down on a key)
+	 */
+	private void handleReleaseKeyInput(KeyCode code) {
+		//Controls for very first paddle are right and left keys
+    	//Room left to add additional keys for extra paddles if necessary, not currently implemented
+    	if (code == KeyCode.RIGHT || code ==KeyCode.LEFT) {//move paddle right
+    		handlePressKeyInput(code);
     	}
 	}
 	
@@ -242,25 +293,90 @@ public class BreakoutWorld {
 		else if(myLevel>=PORTAL_LEVEL) //paddle portal on level 2
 			p.setX(SIZE-p.getWidth());
     	//Otherwise paddle cannot move
+    
+    }
+	 
+	    
+	public void handleFail(){
+	    	System.out.println("Failure");
+	}
+	 
+    /**
+     * Checks each game sprite in the game world to determine a collision
+     * occurred. The method will loop through each sprite and
+     * passing it to the handleCollision()
+     * method. The derived class should override handleCollision() method.
+     *
+     */
+	protected void checkCollisions() {
+	     // check other sprite's collisions
+	     gameManager.resetCollisionsToCheck();
+	     // check each sprite against other sprite objects.
+	     for (GamePiece pieceA: gameManager.getCollisionsToCheck()){
+	         for (GamePiece pieceB: gameManager.getAllPieces()){
+	             if (handleCollision(pieceA, pieceB)) {
+	                 // The break helps optimize the collisions
+	                 break;
+	             }
+	         }
+	     }
+	 }
+	 
+    /**
+     * When two objects collide this method can handle the passed in sprite
+     * objects. By default it returns false, meaning the objects do not
+     * collide.
+     * @param spriteA - called from checkCollision() method to be compared.
+     * @param spriteB - called from checkCollision() method to be compared.
+     * @return boolean True if the objects collided, otherwise false.
+     */
+    protected boolean handleCollision(GamePiece pieceA, GamePiece pieceB) {
+    	 if (pieceA != pieceB) {
+             if (pieceA.collide(pieceB)) {
+                 if (pieceA instanceof Ball && pieceB instanceof Block) {
+                	 if(((Block)pieceB).handleCollision()) //if the block is destroyed
+                	 {
+	                	 ((Ball)pieceA).blockBounce((Block)pieceB); //alter ball path
+	                	 myTotal+=((Block)pieceB).getMyPoints(); //update total
+                		 delayedRemovePiece(pieceB);//remove block
+	                	 myBlocks.remove(pieceB);
+                	 }
+                     return true; //collision has occurred
+                 }
+                 if(pieceA instanceof Ball && pieceB instanceof Paddle){
+                	 ((Ball)pieceA).paddleCheck((Paddle)pieceB);
+                	 return true;
+                 }
+             }
+         }
+  
+         return false;
+    }
+
+    public void levelReset(){
+    	autoRemovePiece(myBall);
+    	autoRemovePiece(myPaddle);
+    	myLives--;
+    	if(myLives==0){
+    		handleFail();
+    	}
+    	else{
+    		myBall = Ball.buildStartBall(SIZE,myLevel);
+    		myPaddle = Paddle.buildStartPaddle(SIZE);
+    		addPiece(myBall);
+    		addPiece(myPaddle);
+    	}
+    	
     }
 
     public void checkLevel(){
-    	if(numBlocks()==0){//if not more blocks
-    		levelUp();
+    	if(numBlocks()==0){//if no more blocks, this level has been cleared
+    		levelUp(myLevel+1);
     	}
-    	if(myBall.ballBelowPaddle(myPaddle)){//if ball below paddle
+    	if(myBall.ballBelowPaddle(myPaddle)){//if ball falls below paddle, level has been lost
     		levelReset();
     	}
     }
-    
-    private void levelUp(){
-    	myLevel++;
-		gameManager.removeAllPieces();
-		getSceneNodes().getChildren().clear();
-    	setLists();//reset lists
-    	addParts(); //add items to screen
-    }
-    
     
     private int numBlocks(){
     	int numBlocks=0;
@@ -274,16 +390,36 @@ public class BreakoutWorld {
     	return numBlocks;
     }
     
-	/**Kicks off (plays) the Timeline objects containing one key frame
-     * that simply runs indefinitely with each frame invoking a method
-     * to update sprite objects, check for collisions, and cleanup sprite
-     * objects.
-     *
-     */
-    public void beginGameLoop() {
-        getGameLoop().play();
+    private void levelUp(int level){
+    	myLevel=level;
+    	setColor(level);
+		gameManager.removeAllPieces();
+		getSceneNodes().getChildren().clear();
+    	setLists();//reset lists
+    	addParts(); //add items to screen
     }
- 
+    
+    private void setColor(int level){
+    	Scene set = getGameSurface();
+    	switch(level){
+    	case 1:
+    		set.setFill(COLOR_1);
+    		break;
+    	case 2:
+    		set.setFill(COLOR_2);
+    		break;
+    	case 3:
+    		set.setFill(COLOR_3);
+    		break;
+    	case 4:
+    		set.setFill(COLOR_4);
+    		break;
+    		
+    	}
+    }
+    
+    
+    
     /**
      * Updates each game sprite in the game world. This method will
      * loop through each sprite and passing it to the handleUpdate()
@@ -304,86 +440,23 @@ public class BreakoutWorld {
     	if(piece instanceof Ball){
     		((Ball)piece).wallCheck(SIZE);//if the ball has fallen off the screen
     	}
+    	if(piece instanceof Paddle){
+    		if(leftHold) {moveLeft((Paddle)piece);}
+    		if(rightHold) {moveRight((Paddle)piece);}
+    	}
     }
     
-    public void levelReset(){
-    	gameManager.removePieces(myBall,myPaddle); //remove old ball and paddle
-    	getSceneNodes().getChildren().remove(myBall.getMyImage());
-    	getSceneNodes().getChildren().remove(myPaddle.getMyImage());
-    	myLives--;
-    	if(myLives==0){
-    		handleFail();
-    	}
-    	else{
-    		myBall = Ball.buildStartBall(myLevel);
-    		myPaddle = Paddle.buildStartPaddle(SIZE);
-    		gameManager.addPieces(myBall,myPaddle);
-    		getSceneNodes().getChildren().add(myBall.getMyImage());
-    		getSceneNodes().getChildren().add(myPaddle.getMyImage());
-    		
-    	}
-    	
-    }
-    
-    public void handleFail(){
-    	System.out.println("Failure");
-    }
- 
-    /**
-     * Checks each game sprite in the game world to determine a collision
-     * occurred. The method will loop through each sprite and
-     * passing it to the handleCollision()
-     * method. The derived class should override handleCollision() method.
+	/**Kicks off (plays) the Timeline objects containing one key frame
+     * that simply runs indefinitely with each frame invoking a method
+     * to update sprite objects, check for collisions, and cleanup sprite
+     * objects.
      *
      */
-    protected void checkCollisions() {
-        // check other sprite's collisions
-        gameManager.resetCollisionsToCheck();
-        // check each sprite against other sprite objects.
-        for (GamePiece pieceA: gameManager.getCollisionsToCheck()){
-            for (GamePiece pieceB: gameManager.getAllPieces()){
-                if (handleCollision(pieceA, pieceB)) {
-                    // The break helps optimize the collisions
-                    //  The break statement means one object only hits another
-                    // object as opposed to one hitting many objects.
-                    // To be more accurate comment out the break statement.
-                    break;
-                }
-            }
-        }
+    public void beginGameLoop() {
+        getGameLoop().play();
     }
  
-    /**
-     * When two objects collide this method can handle the passed in sprite
-     * objects. By default it returns false, meaning the objects do not
-     * collide.
-     * @param spriteA - called from checkCollision() method to be compared.
-     * @param spriteB - called from checkCollision() method to be compared.
-     * @return boolean True if the objects collided, otherwise false.
-     */
-    protected boolean handleCollision(GamePiece pieceA, GamePiece pieceB) {
-    	 if (pieceA != pieceB) {
-             if (pieceA.collide(pieceB)) {
-                 if (pieceA instanceof Ball && pieceB instanceof Block) {
-                	 if(((Block)pieceB).handleCollision()) //if the block is destroyed
-                	 {
-	                	 ((Ball)pieceA).blockBounce((Block)pieceB);
-	                	 myTotal+=((Block)pieceB).getMyPoints();
-                		 getGameManager().addPiecesToBeRemoved(pieceB);
-	                	 getSceneNodes().getChildren().remove(pieceB.getMyImage()); //remove block
-	                	 myBlocks.remove(pieceB);
-                	 }
-                     return true; //collision has occurred
-                 }
-                 if(pieceA instanceof Ball && pieceB instanceof Paddle){
-                	 ((Ball)pieceA).paddleCheck((Paddle)pieceB);
-                	 return true;
-                 }
-             }
-         }
-  
-         return false;
-    }
+    
  
     /**
      * Sprites to be cleaned up.

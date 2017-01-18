@@ -5,12 +5,13 @@ import java.util.Scanner;
 
 public class BlockReader {
 
+	//Won't be able to load class loader because this is a static method
 	public static ArrayList<Block> readBlocks(int level)
     {
     	File file= new File("");
     	ArrayList<Block> toRet = new ArrayList<Block>();
     	
-    	if(level==1){file = new File("src/blocks3.txt");}
+    	if(level==1){file = new File("src/blocks1.txt");}
     	if(level==2){file = new File("src/blocks2.txt");}
     	if(level==3){file = new File("src/blocks3.txt");}
     	if(level==4){file = new File("src/blocks4.txt");}
@@ -29,9 +30,11 @@ public class BlockReader {
     			if(row[i].equals("normal.gif")) {toRet.add(new NormalBlock(line+1, i+1));}
     			if(row[i].equals("concrete.gif")) {toRet.add(new ConcreteBlock(line+1, i+1));}
     			if(row[i].equals("strong.gif")) {toRet.add(new StrongBlock(line+1, i+1));}
+    			if(row[i].equals("double.gif")){toRet.add(new DoubleBlock(line+1, i+1));}
     		}
     		line++;
     	}
+    	scan.close();
     	return toRet;
     }
     

@@ -1,6 +1,6 @@
 public class DoubleBlock extends Block{
 	
-	public static final String DOUBLE_PIC = "normal.gif";
+	public static final String DOUBLE_PIC = "double.gif";
 	
 	public DoubleBlock(double x, double y)
 	{
