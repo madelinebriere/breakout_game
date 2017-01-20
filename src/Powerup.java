@@ -3,7 +3,7 @@ import java.util.Random;
 
 public class Powerup extends GamePiece{
     public static final int FALL_RATE=1; //start with ball moving up
-    public static final String[] POWERUPS = {"paddlepower.gif", "pointspower.gif", "lifepower.gif"};
+    public static final String[] POWERUPS = {"paddlepower.gif", "pointpower.gif", "lifepower.gif", "lifepower.gif"};
     //add one more?
 	
     //What does this powerup do?

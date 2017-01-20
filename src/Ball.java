@@ -11,7 +11,7 @@ public class Ball extends GamePiece{
     public static final int BALL_START_X=300;
     public static final int BALL_START_Y=300;
     public static final int START_X_MOV=0;
-    public static final int START_Y_MOV=3; //start with ball moving up
+    public static final int START_Y_MOV=3; //start with ball moving down
     public static final String BALL_PIC = "dogball.gif";
     public static final int BUFFER=1; //buffer when detecting ball on edges of block
     public static final int BACKOUT=5; //steps that ball moves away from block upon hitting it
@@ -109,7 +109,7 @@ public class Ball extends GamePiece{
     	else if(overlapTop(b)){
     		setMyYMov(-Math.abs(getMyYMov()));
     	}
-    	if(overlapLeft(b)){
+    	else if(overlapLeft(b)){
     		setMyXMov(-Math.abs(getMyXMov()));
     	}
     	else if (overlapRight(b)){

@@ -7,13 +7,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public abstract class GamePiece {
-	private ImageView myImage; //Each GamePiece has an image that represents 
+	private ImageView myImage; //Each GamePiece has an image that represents it
+	private String myType;
 	
 	public GamePiece (double x, double y, String type)
 	{
 		myImage = buildImage(type, x, y);
+		myType=type;
 	}
-    
+
 	/**
 	 * All GamePieces will have to be updated in their own ways
 	 */
@@ -70,6 +72,14 @@ public abstract class GamePiece {
 		return myImage.getY();
 	}
 
+	public void setCenterX(double x){
+		myImage.setX(x-this.getWidth()/2);
+	}
+	
+	public void setCenterY(double y){
+		myImage.setY(y-this.getHeight()/2);
+	}
+	
 	public double getCenterX(){
 		return getX()+this.getWidth() / 2;
 	}
@@ -104,5 +114,15 @@ public abstract class GamePiece {
 	{
 		return myImage.getBoundsInLocal().getWidth();
 	}
+	
+    
+	public String getMyType() {
+		return myType;
+	}
+
+	public void setMyType(String myType) {
+		this.myType = myType;
+	}
+
 	
 }
