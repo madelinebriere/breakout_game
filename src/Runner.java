@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 public class Runner extends Application {
  
     BreakoutWorld world = new BreakoutWorld(60, "Breakout");
-    PopupMenu popup = new PopupMenu();
     /**
      * @param args the command line arguments
      */
@@ -19,8 +18,8 @@ public class Runner extends Application {
  
     @Override
     public void start(Stage primaryStage) {
-    	Stage pop = new Stage();
-    	popup.start(pop);
+    
+    	PopupMenu.fidoMenu();//start menu
     	
         world.initialize(primaryStage);
         
@@ -31,5 +30,7 @@ public class Runner extends Application {
         world.beginGameLoop();
 
     }
+    
+    
  
 }

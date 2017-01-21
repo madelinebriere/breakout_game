@@ -33,7 +33,7 @@ public class Ball extends GamePiece{
     }
 
     public boolean ballBelowPaddle(Paddle p){
-    	return (this.getCenterY())>p.getY();
+    	return (this.getCenterY())>(p.getY()+this.getHeight()/4);
     }
     
 	public void paddleCheck(Paddle p)

@@ -1,4 +1,3 @@
-import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -16,7 +15,7 @@ public class InfoBox{
 	public InfoBox(int size) {
 		Text text = new Text(10,size-65, "");
 		text.setFill(Color.ALICEBLUE);
-		text.setFont(new Font(15));
+		text.setFont(Font.font("Cambria", 15));
 		myText = text;
 		myBox = new Rectangle(5, size-65,90,60);
 		myBox.setFill(Color.DARKCYAN);
