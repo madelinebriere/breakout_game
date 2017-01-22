@@ -12,7 +12,7 @@ public class StrongBlock extends Block{
 	}
 
 	@Override
-	public boolean handleCollision() {
+	public boolean isDestroyed() {
 		myHits--;
 		if(myHits==0){return true;}
 		else{return false;}

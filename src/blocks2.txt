@@ -1,3 +1,3 @@
 normal.gif None normal.gif normal.gif None normal.gif
 normal.gif None normal.gif normal.gif None normal.gif
-normal.gif concrete.gif strong.gif strong.gif concrete.gif normal.gif
+normal.gif strong.gif concrete.gif concrete.gif strong.gif normal.gif

@@ -33,7 +33,7 @@ public class Powerup extends GamePiece{
 	}
 
 	@Override
-	public void update() {
+	public void update(int size, int level) {
 		setY(getY()+FALL_RATE); //falling powerup
 	}
 	

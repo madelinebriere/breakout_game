@@ -25,14 +25,14 @@ public abstract class Block extends GamePiece{
 	}
 	
 	
-	public abstract boolean handleCollision(); 
+	public abstract boolean isDestroyed(); 
 	//Each try of block must react to a collision in a unique way
 	//Changes hits based on the type of block it is (e.g., if concrete, no change)
 	//returns whether its destroyed or not
 	
 	
 	@Override
-	public void update() {
+	public void update(int size, int level) {
 		//No movement necessary for blocks
 	}
 

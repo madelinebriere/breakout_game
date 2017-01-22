@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-
-import com.sun.javafx.tk.Toolkit.Task;
-
+import java.util.ArrayList; 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -17,22 +14,8 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
  
 /**
- * This application demonstrates a JavaFX 2.x Game Loop.
- * Shown below are the methods which comprise of the fundamentals to a
- * simple game loop in JavaFX:
-*
- *  <strong>initialize()</strong> - Initialize the game world.
- *  <strong>beginGameLoop()</strong> - Creates a JavaFX Timeline object containing the game life cycle.
- *  <strong>updateSprites()</strong> - Updates the sprite objects each period (per frame)
- *  <strong>checkCollisions()</strong> - Method will determine objects that collide with each other.
- *  <strong>cleanupSprites()</strong> - Any sprite objects needing to be removed from play.
- *
- * @author cdea
- */
-
-/**
- * eliminate need for myBall, myPaddle and myBlocks??
- *
+ * Basic gameloop application, implementing an adaptation of Breakout
+ * Based on code by Carl Dea (cdea)
  */
 
 public class BreakoutWorld {
@@ -43,20 +26,15 @@ public class BreakoutWorld {
 	public static final Color COLOR_4=Color.LIGHTSKYBLUE;
 	
 	public static final int SIZE = 500;
-	
-	//Paddle power levels
-    public static final int PORTAL_LEVEL = 2;//level where paddle is able to transport from one side to other
-    public static final int SPEED_LEVEL = 3; //level where paddle is able to speed up as it moves in one direction
     
     //Starting game control values
-    public static final int START_LIVES=1;
+    public static final int START_LIVES=3;
     public static final int START_POINTS=0;
     public static final int START_LEVEL=1;
+    public static final int LAST_LEVEL=4;
     
     //Misc variables
-    public static final int PADDLE_STEP=5;//step made by paddle each time left or right key is hit
     public static final int POINTS_AWARDED = 50;
-    
     public static final int CAT_THRESH = 2000;
     
     /*All of the following number variables must be POSITIVE numbers*/
@@ -64,16 +42,11 @@ public class BreakoutWorld {
     private int myLevel; //must be number 1 - 4
     private int myTotal; //total score
     
-    private ArrayList<Block> myBlocks = new ArrayList<Block>(); //blocks in game
+    //private ArrayList<Block> myBlocks = new ArrayList<Block>(); //blocks in game
     private Ball myBall; //decision made to use myBouncer instead of self-created Ball class
     private Paddle myPaddle;
     private InfoBox myBox;
-    
-    private int catTimer = 0; //keep track of when to drop cats
-    
-    //Key booleans to implement smooth motions
-    private boolean leftHold=false; //is the left key being held down?
-    private boolean rightHold=false; //is the right key being held down?
+    private Cat myHeadCat;
     
 	/** The JavaFX Scene as the game surface */
     private Scene gameSurface;
@@ -131,18 +104,13 @@ public class BreakoutWorld {
     public void generalUpdates(){
     	 if(myBall!=null & myPaddle!=null){//easy check to avoid any nullpointers
          	 updateBox();
-         	// update actors
              updateSprites();
-             // check for collision
-             checkCollisions();
-             //New level?
-             checkLevel();
-             //confirm that the paddle hasn't been replaced & doesn't need new image
-             checkPaddle();
-             //Add more cats
-             checkCats();
-             // removed dead things
-             cleanupPieces();}
+             checkCollisions();//update based on collisions
+             checkLevel();//New level/ game-over?
+             checkPaddle();//confirm that the paddle hasn't been replaced & doesn't need new image
+             checkCats(); //Add more cats if needed
+             cleanupPieces();// removed dead things
+         }
     }
  
     /**
@@ -153,7 +121,6 @@ public class BreakoutWorld {
     	stage=primaryStage;
     	primaryStage.setTitle(getWindowTitle());
     	primaryStage.setAlwaysOnTop(true);
-        //primaryStage.setFullScreen(true);
  
         // Create the scene
         setSceneNodes(new Group());
@@ -163,18 +130,21 @@ public class BreakoutWorld {
         
         //Initialize and add variables/pieces
     	setStartVars();
-    	setLists();
-    	addParts();
+    	setStartParts();
         
         // Setup Game input
         setupInput(primaryStage);
     }
     
-    private void addParts(){
-    	addPiece(myBall);
-        addPiece(myPaddle);
-        addPieces(myBlocks);
-        addBox();
+    public void setStartParts()
+    {
+    	 ArrayList<Block> myBlocks = BlockReader.readBlocks(myLevel); //blocks dependent on level
+    	 Powerup.setPowers(myLevel, myBlocks); //apply powerups to blocks
+    	 addPieces(myBlocks);
+    	 addPiece(myBall=Ball.buildStartBall(SIZE, myLevel)); //ball speed dependent on level
+    	 addPiece(myPaddle=Paddle.buildStartPaddle(SIZE)); //paddle dependent upon size of frame
+    	 myHeadCat=addCat();
+    	 addBox();
     }
     
     private void addPiece(GamePiece piece){
@@ -198,15 +168,6 @@ public class BreakoutWorld {
     	myLevel=START_LEVEL; //start on level 1
     	myTotal=START_POINTS;//start with no points
     }
-    
-
-    public void setLists()
-    {
-    	 myBlocks = BlockReader.readBlocks(myLevel); //blocks dependent on level
-    	 Powerup.setPowers(myLevel, myBlocks); //apply powerups to blocks
-    	 myBall = Ball.buildStartBall(SIZE, myLevel); //ball speed dependent on level
-    	 myPaddle = Paddle.buildStartPaddle(SIZE); //paddle dependent upon size of frame
-    }
  
     public InfoBox setBoxValues(){
     	InfoBox info = new InfoBox(SIZE);
@@ -214,12 +175,12 @@ public class BreakoutWorld {
     	info.setLives(myLives);
     	info.setPoints(myTotal);
     	return info;
-    	
     }
     
-    public void addCat(){
+    public Cat addCat(){
     	Cat cat = Cat.buildCat(SIZE);
     	addPiece(cat);
+    	return cat;
     }
     
     public void addBox(){
@@ -248,38 +209,23 @@ public class BreakoutWorld {
 		//Controls for very first paddle are right and left keys
     	//Room left to add additional keys for extra paddles if necessary, not currently implemented
 		if (code == KeyCode.RIGHT) {//move paddle right
-    		moveRight(myPaddle);
-    		rightHold=true;
-    		myPaddle.setMovingRight(true);
-    		myPaddle.setMovingLeft(false);
+    		myPaddle.setRightMoveToDefault();
+    		myPaddle.setLeftMove(0);
     	}
     	if (code == KeyCode.LEFT) {//move paddle left
-    		moveLeft(myPaddle);
-    		leftHold=true;
-    		myPaddle.setMovingRight(false);
-    		myPaddle.setMovingLeft(true);
+    		myPaddle.setLeftMoveToDefault();
+    		myPaddle.setRightMove(0);
     	}
-    	if (code == KeyCode.L){
-    		myLives++;
-    	}
-    	if (code == KeyCode.P){
-    		myTotal++;
-    	}
-    	if(code == KeyCode.R){
-    		pieceReset();
-    	}
-    	if (code == KeyCode.DIGIT1){
-    		levelUp(1);
-    	}
-    	if (code == KeyCode.DIGIT2){
-    		levelUp(2);
-    	}
-    	if (code==KeyCode.DIGIT3){
-    		levelUp(3);
-    	}
-    	if(code==KeyCode.DIGIT4){
-    		levelUp(4);
-    	}
+    	
+    	if (code == KeyCode.L){myLives++;}
+    	if (code == KeyCode.P){myTotal++;}
+    	if(code == KeyCode.R){levelReset();}
+    	if(code == KeyCode.N){gameReset();}
+    	
+    	if (code == KeyCode.DIGIT1){levelUp(1);}
+    	if (code == KeyCode.DIGIT2){levelUp(2);}
+    	if (code==KeyCode.DIGIT3){levelUp(3);}
+    	if(code==KeyCode.DIGIT4){levelUp(4);}
 	}
 	
 	/*
@@ -289,53 +235,25 @@ public class BreakoutWorld {
 	private void handleReleaseKeyInput(KeyCode code) {
 		//Controls for very first paddle are right and left keys
     	//Room left to add additional keys for extra paddles if necessary, not currently implemented
-    	if (code == KeyCode.RIGHT){
-    		rightHold=false;
-    	}
-    		
-        if(code == KeyCode.LEFT) {
-        	leftHold=false;
-        	
-    	}
+    	if (code == KeyCode.RIGHT){myPaddle.setRightMove(0);}
+        if (code == KeyCode.LEFT) {myPaddle.setLeftMove(0);}
 	}
+    
 	
-    public void moveRight(Paddle p)
-    {
-    	if(p.getX()+p.getWidth()<SIZE-PADDLE_STEP)
-			p.setX(p.getX()+PADDLE_STEP);
-		else if (myLevel>=PORTAL_LEVEL) //paddle portal on level 2
-			p.setX(0);
-    	//Otherwise paddle cannot move
+    public void checkCats(){
+    	if(myHeadCat.timeToAttack(myLevel)){//math dictates that more cats show up per level
+    		myHeadCat = addCat();
+    	}
     }
     
-    public void moveLeft(Paddle p)
-    {
-    	if(p.getX()>PADDLE_STEP)
-			p.setX(p.getX()-PADDLE_STEP);
-		else if(myLevel>=PORTAL_LEVEL) //paddle portal on level 2
-			p.setX(SIZE-p.getWidth());
-    	//Otherwise paddle cannot move
-    
+    public void checkPaddle(){
+    	if(myPaddle.getLeftMove()>0 || myPaddle.getRightMove()>0){//if the paddle is moving, update
+	    	removePiece(myPaddle); //remove to replace with new paddle
+	    	myPaddle = myPaddle.resetImage(); //reset image
+	    	addPiece(myPaddle); //add back
+    	}
     }
     
-	public void handleFail(){
-		finalMessage("You lose!");
-	}
-	public void handleWin(){
-		finalMessage("You win!");
-	}
-	
-	public void finalMessage(String string){
-	    getSceneNodes().getChildren().clear();
-	    getGameManager().removeAllPieces();
-	    
-	    Text text = new Text(3*SIZE/7, SIZE/2, string);
-	    text.setFill(Color.DARKORCHID);
-		text.setFont(Font.font("Cambria", 20));
-		text.setScaleX(3);
-		text.setScaleY(3);
-	    getSceneNodes().getChildren().add(text);
-	}
     /**
      * Checks each game sprite in the game world to determine a collision
      * occurred. The method will loop through each sprite and
@@ -369,17 +287,17 @@ public class BreakoutWorld {
     	 if (pieceA != pieceB) {
              if (pieceA.collide(pieceB)) {
                  if (pieceA instanceof Ball && pieceB instanceof Block) {
-                	 ((Ball)pieceA).blockBounce((Block)pieceB); //alter ball path
-                	 if(((Block)pieceB).handleCollision()) {brickHit((Block)pieceB);}//if block is destroyed
+                	 ((Ball)pieceA).bounceOffBlock((Block)pieceB); //alter ball path
+                	 if(((Block)pieceB).isDestroyed()) {removeBlock((Block)pieceB);}//if block is destroyed
                  }
                  if(pieceA instanceof Ball && pieceB instanceof Paddle){
-                	 ((Ball)pieceA).paddleCheck((Paddle)pieceB);
+                	 ((Ball)pieceA).bounceOffPaddle((Paddle)pieceB);
                  }
                  if(pieceA instanceof Paddle && pieceB instanceof Powerup){
-                	 powerup((Powerup)pieceB, (Paddle)pieceA);
+                	 applyPowerup((Powerup)pieceB);
                  }
                  if(pieceA instanceof Paddle && pieceB instanceof Cat){
-                	 catHit((Cat)pieceB, (Paddle)pieceA);
+                	 takeCatDamage((Cat)pieceB);
                  }
                  return true; //collision has occurred
              }
@@ -387,113 +305,72 @@ public class BreakoutWorld {
   
          return false;
     }
-    public void catHit(Cat c, Paddle p){
+    
+    public void takeCatDamage(Cat c){
     	myTotal-=20; //lose 20 points
     	removePiece(c);
     }
     
-    public void powerup(Powerup p, Paddle pad){
+    public void applyPowerup(Powerup p){
     	if(p.getMyType().equals("pointpower.gif")){myTotal+=POINTS_AWARDED;}
     	if(p.getMyType().equals("lifepower.gif")){myLives++;}
     	if(p.getMyType().equals("paddlepower.gif")){myPaddle.setReset(true);}
     	removePiece(p);
     }
-    
-    public void checkCats(){
-    	if(catTimer*myLevel >= CAT_THRESH){//math dictates that more cats show up per level
-    		addCat();
-    		catTimer=0;
-    	}
-    	else{
-    		catTimer++;
-    	}
-    }
-    
-    public void checkPaddle(){
-    	removePiece(myPaddle); //remove to replace with new paddle
-    	if(myPaddle.isReset()){ // if paddlePower picked up
-        	if(myPaddle.isMovingRight()){myPaddle=Paddle.buildLongRight(myPaddle);}
-        	else{myPaddle=Paddle.buildLongLeft(myPaddle);}
-    	}
-    	else{ //reset image to correct direction
-    		if(myPaddle.isMovingLeft()){myPaddle=Paddle.buildLeft(myPaddle);}
-        	else{myPaddle=Paddle.buildRight(myPaddle);}
-    	}
-    	addPiece(myPaddle);
-    }
 
-    public void brickHit(Block b){
+    public void removeBlock(Block b){
     	 myTotal+=(b).getMyPoints(); //update total
 		 removePiece(b);//remove block from scene
-    	 myBlocks.remove(b); // remove block from list
-    	 if((b).getMyPower()!=null){//if the block holds a powerup
-    		 addPiece(b.getMyPower());
-    		 //add powerup to board
-    	 }
+    	 if(b.getMyPower()!=null){addPiece(b.getMyPower());}//drop powerup if there is one
     }
     
-    public void resetVars(){
-    	myPaddle.setReset(false);
-    	myPaddle.setMovingLeft(true);
-        myPaddle.setMovingRight(false);
-        leftHold=false;
-        rightHold=false;
-        catTimer=0;
+    public void checkLevel(){
+    	if(numBlocks()==0){//if no more blocks, this level has been cleared
+    		levelUp(myLevel+1);
+    	}
+    	if(myBall.offScreen(SIZE)){//if ball falls off screen, level has been lost
+    		levelFail();
+    	}
+    }
+    
+    private void gameReset(){
+    	setStartVars();
+    	levelUp(1);
+    }
+    
+    private void levelUp(int level){
+    	if(level>LAST_LEVEL){handleWin();}
+    	else{
+	    	myLevel=level;
+	    	setColor(level);
+			gameManager.removeAllPieces();
+			getSceneNodes().getChildren().clear();
+	    	setStartParts();
+    	}
     }
     
     public void levelFail(){
     	myLives--;
-    	if(myLives==0){
-    		handleFail();
-    	}
-    	else{
-    		resetVars();
-    		pieceReset();
-    	}
+    	if(myLives==0){handleFail();}
+    	else{levelReset();}
     }
     
-    public void pieceReset(){
+    public void levelReset(){
     	removePiece(myBall);
     	removePiece(myPaddle);
     	myBall = Ball.buildStartBall(SIZE,myLevel);
     	myPaddle = Paddle.buildStartPaddle(SIZE);
     	addPiece(myBall);
     	addPiece(myPaddle);
-    	
-    }
-
-    public void checkLevel(){
-    	if(numBlocks()==0){//if no more blocks, this level has been cleared
-    		levelUp(myLevel+1);
-    	}
-    	if(myBall.ballBelowPaddle(myPaddle)){//if ball falls below paddle, level has been lost
-    		levelFail();
-    	}
     }
     
     private int numBlocks(){
     	int numBlocks=0;
     	if(myTotal==0){return 1;}//no points made, no blocks could be removed
-    	if(!(myBlocks.size()==0))//if there are no blocks and it is not before initialization
-    	{
-	    	for(Block b: myBlocks) {
-	    		if(b!=null && !b.getClass().getName().equals("ConcreteBlock")){numBlocks++;}
-	    	}
+    	for(GamePiece g: getGameManager().getAllPieces()){
+	    	if(g!=null && g instanceof Block && !g.getClass().getName().equals("ConcreteBlock")){numBlocks++;}
     	}
     	return numBlocks;
-    }
-    
-    private void levelUp(int level){
-    	if(level>=5){handleWin();}
-    	else{
-	    	resetVars();
-	    	myLevel=level;
-	    	setColor(level);
-			gameManager.removeAllPieces();
-			getSceneNodes().getChildren().clear();
-	    	setLists();//reset lists
-	    	addParts(); //add items to screen
-    	}
     }
     
     private void setColor(int level){
@@ -514,9 +391,26 @@ public class BreakoutWorld {
     		
     	}
     }
-    
-    
-    
+
+	public void handleFail(){
+		finalMessage("You lose!");
+	}
+	public void handleWin(){
+		finalMessage("You win!");
+	}
+	
+	public void finalMessage(String string){
+	    getSceneNodes().getChildren().clear();
+	    getGameManager().removeAllPieces();
+	    
+	    Text text = new Text(3*SIZE/7, SIZE/2, string);
+	    text.setFill(Color.DARKORCHID);
+		text.setFont(Font.font("Cambria", 20));
+		text.setScaleX(3);
+		text.setScaleY(3);
+	    getSceneNodes().getChildren().add(text);
+	}
+	
     /**
      * Updates each game sprite in the game world. This method will
      * loop through each sprite and passing it to the handleUpdate()
@@ -533,13 +427,9 @@ public class BreakoutWorld {
      * @param sprite - The sprite to update.
      */
     protected void handleUpdate(GamePiece piece) {
-    	piece.update();
-    	if(piece instanceof Ball){
-    		((Ball)piece).wallCheck(SIZE);//if the ball has fallen off the screen
-    	}
+    	piece.update(SIZE, myLevel); //internal changes by piece
     	if(piece instanceof Paddle){
-    		if(leftHold) {moveLeft((Paddle)piece);}
-    		if(rightHold) {moveRight((Paddle)piece);}
+    		
     	}
     }
     

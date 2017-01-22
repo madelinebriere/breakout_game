@@ -26,6 +26,15 @@ public class GameManager {
         return GAME_ACTORS;
     }
     
+    //Works on assumption there is only one paddle in list
+    public Paddle getPaddle(){
+    	Paddle toRet=null;
+    	for (GamePiece p: GAME_ACTORS){
+    		if(p instanceof Paddle){toRet = (Paddle)p;}
+    	}
+    	return toRet;
+    }
+    
     /** */
     public void removeAllPieces() {
         GAME_ACTORS.clear();
@@ -100,4 +109,5 @@ public class GameManager {
         // reset the clean up sprites
         CLEAN_UP_PIECES.clear();
     }
+    
 }

@@ -19,7 +19,7 @@ public abstract class GamePiece {
 	/**
 	 * All GamePieces will have to be updated in their own ways
 	 */
-	public abstract void update();
+	public abstract void update(int size, int level);
 	
 	/**
 	 * Check if this GamePiece has collided with another GamePiece

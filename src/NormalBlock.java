@@ -12,7 +12,7 @@ public class NormalBlock extends Block{
 	}
 
 	@Override
-	public boolean handleCollision() {
+	public boolean isDestroyed() {
 		myHits--;
 		return true;
 	}

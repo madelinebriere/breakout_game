@@ -11,7 +11,7 @@ public class ConcreteBlock extends Block{
 	}
 
 	@Override
-	public boolean handleCollision() {
+	public boolean isDestroyed() {
 		//No change to hits
 		return false;
 	}

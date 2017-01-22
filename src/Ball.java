@@ -27,18 +27,22 @@ public class Ball extends GamePiece{
 		myYMov=yMov;
 	}
 	
-    public static Ball buildStartBall(int size, int level)
-    {
+    public static Ball buildStartBall(int size, int level){
     	return new Ball(size/2, size/2, START_X_MOV, START_Y_MOV+level-1);
     }
 
-    public boolean ballBelowPaddle(Paddle p){
-    	return (this.getCenterY())>(p.getY()+this.getHeight()/4);
+    public boolean offScreen(int size){
+    	return this.getCenterY()>size;
     }
     
-	public void paddleCheck(Paddle p)
+    public boolean ballBelowPaddle(Paddle paddle){
+    	return this.getCenterY()>paddle.getY()+paddle.getHeight()/4;
+    }
+    
+	public void bounceOffPaddle(Paddle p)
     {
-    	 switch (paddleHitLoc(p)) //rebound ball if 1,2 or 3 (impact), 0 if none
+    	 
+		switch (paddleHitLoc(p)) //rebound ball if 1,2 or 3 (impact), 0 if none
 		 {
 	    	//Sideways bouncing based on y component	
 		   	case 1: 
@@ -68,7 +72,7 @@ public class Ball extends GamePiece{
     	double px = paddle.getX();
     	double pw = paddle.getWidth();//paddle width
     	
-    	if(collide(paddle)) //ball hits paddle
+    	if(collide(paddle) && !ballBelowPaddle(paddle)) 
     	{
     		setMyYMov(-1*Math.abs(getMyYMov())); //ball moves up no matter what
     		
@@ -82,7 +86,7 @@ public class Ball extends GamePiece{
     }
  
     //return true if the ball has fallen off the bottom of the screen
-    public boolean wallCheck(double size)
+    public void wallCheck(double size)
     {
 	    	//ball attributes
 	   	double bx = getX();
@@ -94,15 +98,12 @@ public class Ball extends GamePiece{
 	   	if(bx<0){setMyXMov(1*getNonZeroSpeed());}//if hits left wall, bounce back
 	   	if(bx+width>size){setMyXMov(-getNonZeroSpeed());}//if hits right wall, bounce back
 	   	if(by<0){setMyYMov(1*getNonZeroSpeed());} //if hits top, bounce back down
-	   	if(by+height>size){return true;} // if passes through bottom, this ball "is dead" and a new one must be created
-    	return false;
     }
-    
     /**
      * Troubleshoot
      * @param b
      */
-    public void blockBounce(Block b){
+    public void bounceOffBlock(Block b){
     	if(overlapBottom(b)){
     		setMyYMov(Math.abs(getMyYMov()));
     	}
@@ -146,10 +147,11 @@ public class Ball extends GamePiece{
     
     //Move ball
 	@Override
-	public void update() {
+	public void update(int size, int level) {
 
         setX(getX() + getMyXMov());
         setY(getY() + getMyYMov());
+        wallCheck(size);
 	}
 
 	public int getNonZeroSpeed()
