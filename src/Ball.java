@@ -1,21 +1,14 @@
-import java.util.ArrayList;
-
 import javafx.geometry.Bounds;
 import javafx.scene.shape.Rectangle;
 
-
-
 public class Ball extends GamePiece{
-
-	  //Ball variables
+	//Default starting variables
     public static final int BALL_START_X=300;
     public static final int BALL_START_Y=300;
     public static final int START_X_MOV=0;
     public static final int START_Y_MOV=3; //start with ball moving down
     public static final String BALL_PIC = "dogball.gif";
-    public static final int BUFFER=1; //buffer when detecting ball on edges of block
-    public static final int BACKOUT=5; //steps that ball moves away from block upon hitting it
-    //Used to keep ball from registering a block more than once (e.g., a strong block)
+    public static final int BLOCK_EDGE_BUFFER=1; //buffer when detecting ball on edges of block
 	
 	private int myXMov; //X velocity
 	private int myYMov; //Y velocity
@@ -27,6 +20,12 @@ public class Ball extends GamePiece{
 		myYMov=yMov;
 	}
 	
+	/**
+	 * Generate the initial Ball object
+	 * @param size: The size of the scene
+	 * @param level: The game level (impacts speed)
+	 * @return a Ball at the center of the screen, moving at the correct x and y velocity
+	 */
     public static Ball buildStartBall(int size, int level){
     	return new Ball(size/2, size/2, START_X_MOV, START_Y_MOV+level-1);
     }
@@ -39,10 +38,16 @@ public class Ball extends GamePiece{
     	return this.getCenterY()>paddle.getY()+paddle.getHeight()/4;
     }
     
+    /**
+     * Set the x and y velocity of the ball according to where the ball has hit the paddle
+     * --> Left side: 45 degree angle to the left
+     * --> Middle: Straight up
+     * --> Right: 45 degree angle to the right
+     * @param p: Paddle that the Ball (this) has hit
+     */
 	public void bounceOffPaddle(Paddle p)
     {
-    	 
-		switch (paddleHitLoc(p)) //rebound ball if 1,2 or 3 (impact), 0 if none
+		switch (paddleHitLocation(p)) //rebound ball if 1,2 or 3 (impact), 0 if none
 		 {
 	    	//Sideways bouncing based on y component	
 		   	case 1: 
@@ -55,15 +60,15 @@ public class Ball extends GamePiece{
 		   		setMyXMov(getMyYMov()*-1);
 		   		break;
 		  }
-	    
-    	
     }
     
-    /*
+    /**
      * Determines if and where ball has hit paddle
+     * @param paddle, paddle that the ball has hit
+     * @return int representing the location of the impact
      * Returns: 0 - not hit, 1 - left hit, 2 - middle hit, 3 - right hit
      */
-    public int paddleHitLoc(Paddle paddle)
+    public int paddleHitLocation(Paddle paddle)
     {
     	//needed ball attributes
     	double bx = getCenterX();
@@ -72,27 +77,28 @@ public class Ball extends GamePiece{
     	double px = paddle.getX();
     	double pw = paddle.getWidth();//paddle width
     	
-    	if(collide(paddle) && !ballBelowPaddle(paddle)) 
+    	if(collide(paddle) && !ballBelowPaddle(paddle)) //ball has hit paddle and is not below paddle
     	{
     		setMyYMov(-1*Math.abs(getMyYMov())); //ball moves up no matter what
     		
-    		if(bx<(px+pw/3)) {return 1;} //ball hits left side, bounce up and to left
-    		else if(bx<(px+(2*pw/3))){return 2;} //ball hits middle, go straight up
-    		else {return 3;}//ball hits left, bounce up and to right
-    		
+    		if(bx<(px+pw/3)) {return 1;} //ball hits left side
+    		else if(bx<(px+(2*pw/3))){return 2;} //ball hits middle
+    		else {return 3;}//ball hits right side
     	}
     	return 0; //default meaning no impact
     	
     }
  
-    //return true if the ball has fallen off the bottom of the screen
+    /**
+     * Alters the movement of the ball if it is moving off of the screen --> bounce-like motion
+     * @param size: Size of the scene
+     */
     public void wallCheck(double size)
     {
 	    	//ball attributes
 	   	double bx = getX();
 	   	double by = getY();
 	   	double width = getWidth();
-	   	double height = getHeight();
 	    	
 	   	//Boundary logic --> check for walls
 	   	if(bx<0){setMyXMov(1*getNonZeroSpeed());}//if hits left wall, bounce back
@@ -100,52 +106,63 @@ public class Ball extends GamePiece{
 	   	if(by<0){setMyYMov(1*getNonZeroSpeed());} //if hits top, bounce back down
     }
     /**
-     * Troubleshoot
-     * @param b
+     * Response to collision between ball and block
+     * Alters the movement of the ball based on the edge it has hit to create natural motion 
+     * @param b: The block that has been hit
      */
     public void bounceOffBlock(Block b){
-    	if(overlapBottom(b)){
-    		setMyYMov(Math.abs(getMyYMov()));
+    	if(overlapsBottom(b)){
+    		setMyYMov(Math.abs(getMyYMov()));//y-motion down
     	}
-    	else if(overlapTop(b)){
-    		setMyYMov(-Math.abs(getMyYMov()));
+    	else if(overlapsTop(b)){
+    		setMyYMov(-Math.abs(getMyYMov()));//y-motion up
     	}
-    	else if(overlapLeft(b)){
-    		setMyXMov(-Math.abs(getMyXMov()));
+    	else if(overlapsLeft(b)){
+    		setMyXMov(-Math.abs(getMyXMov()));//x-motion left
     	}
-    	else if (overlapRight(b)){
-    		setMyXMov(Math.abs(getMyXMov()));
+    	else if (overlapsRight(b)){
+    		setMyXMov(Math.abs(getMyXMov()));//x-motion right
     	}
-/*
- *     finish logic
- */
+
     }
     
-    public boolean overlapBottom(Block b){
-    	Rectangle bottom = new Rectangle(b.getX()-BUFFER, b.getY()+b.getHeight()-BUFFER, b.getWidth()+2*BUFFER, 2*BUFFER);
-    	Bounds bounds = bottom.getBoundsInLocal();
+    /**
+     * Checks if the ball has overlapped with an edge, used in bouncing decision-making
+     * @param b: Block that has been hit
+     * @param edge: String representing the edge being checked
+     * @return boolean,  true if the ball overlaps with the specific edge
+     */
+    public boolean overlapsEdge(Block b, String edge){
+    	Rectangle rect = new Rectangle();
+    	if(edge.equals("bottom")){
+    		rect= new Rectangle(b.getX()-BLOCK_EDGE_BUFFER, b.getY()+b.getHeight()-BLOCK_EDGE_BUFFER, 
+        			b.getWidth()+2*BLOCK_EDGE_BUFFER, 2*BLOCK_EDGE_BUFFER);
+    	}
+    	if(edge.equals("top")){
+    		rect= new Rectangle(b.getX()-BLOCK_EDGE_BUFFER, b.getY()-BLOCK_EDGE_BUFFER, 
+        			b.getWidth()+2*BLOCK_EDGE_BUFFER, 2*BLOCK_EDGE_BUFFER);
+    	}
+    	if(edge.equals("left")){
+    		rect= new Rectangle(b.getX()-BLOCK_EDGE_BUFFER, b.getY()-BLOCK_EDGE_BUFFER,
+        			2*BLOCK_EDGE_BUFFER, b.getHeight()+2*BLOCK_EDGE_BUFFER);
+    	}
+    	if(edge.equals("right")){
+    		rect= new Rectangle(b.getX()+b.getWidth()-BLOCK_EDGE_BUFFER, b.getY()-BLOCK_EDGE_BUFFER, 
+        			2*BLOCK_EDGE_BUFFER, b.getHeight()+2*BLOCK_EDGE_BUFFER);
+    	}
+    	Bounds bounds = rect.getBoundsInLocal();
     	return bounds.intersects(this.getMyImage().getBoundsInLocal());
     }
     
-    public boolean overlapTop(Block b){
-    	Rectangle top= new Rectangle(b.getX()-BUFFER, b.getY()-BUFFER, b.getWidth()+2*BUFFER, 2*BUFFER);
-    	Bounds bounds = top.getBoundsInLocal();
-    	return bounds.intersects(this.getMyImage().getBoundsInLocal());
-    }
+    public boolean overlapsBottom(Block b){return overlapsEdge(b,"bottom");}
+    public boolean overlapsTop(Block b){return overlapsEdge(b,"top");}
+    public boolean overlapsLeft(Block b){return overlapsEdge(b,"left");}
+    public boolean overlapsRight(Block b){return overlapsEdge(b,"right");}
     
-    public boolean overlapLeft(Block b){
-    	Rectangle left= new Rectangle(b.getX()-BUFFER, b.getY()-BUFFER, 2*BUFFER, b.getHeight()+2*BUFFER);
-    	Bounds bounds = left.getBoundsInLocal();
-    	return bounds.intersects(this.getMyImage().getBoundsInLocal());
-    }
     
-    public boolean overlapRight(Block b){
-    	Rectangle right= new Rectangle(b.getX()+b.getWidth()-BUFFER, b.getY()-BUFFER, 2*BUFFER, b.getHeight()+2*BUFFER);
-    	Bounds bounds = right.getBoundsInLocal();
-    	return bounds.intersects(this.getMyImage().getBoundsInLocal());
-    }
-    
-    //Move ball
+    /**
+     * Automatically inherited from GamePiece, updated with other GamePieces
+     */
 	@Override
 	public void update(int size, int level) {
 
@@ -161,20 +178,10 @@ public class Ball extends GamePiece{
 		
 	}
 	
-	public int getMyXMov() {
-		return myXMov;
-	}
-
-	public void setMyXMov(int myXMov) {
-		this.myXMov = myXMov;
-	}
-
-	public int getMyYMov() {
-		return myYMov;
-	}
-
-	public void setMyYMov(int myYMov) {
-		this.myYMov = myYMov;
-	}
+	//Getters and setters
+	public int getMyXMov() {return myXMov;}
+	public void setMyXMov(int myXMov) {this.myXMov = myXMov;}
+	public int getMyYMov() {return myYMov;}
+	public void setMyYMov(int myYMov) {this.myYMov = myYMov;}
 	
 }

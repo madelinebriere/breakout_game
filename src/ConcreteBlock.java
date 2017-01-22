@@ -12,8 +12,10 @@ public class ConcreteBlock extends Block{
 
 	@Override
 	public boolean isDestroyed() {
-		//No change to hits
 		return false;
 	}
+	
+	@Override
+	public void takeHit(){} //no action taken for indestructible block
 
 }

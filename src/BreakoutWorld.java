@@ -288,22 +288,27 @@ public class BreakoutWorld {
              if (pieceA.collide(pieceB)) {
                  if (pieceA instanceof Ball && pieceB instanceof Block) {
                 	 ((Ball)pieceA).bounceOffBlock((Block)pieceB); //alter ball path
-                	 if(((Block)pieceB).isDestroyed()) {removeBlock((Block)pieceB);}//if block is destroyed
+                	 takeBlockDamage((Block)pieceB); //update block with damage
                  }
                  if(pieceA instanceof Ball && pieceB instanceof Paddle){
-                	 ((Ball)pieceA).bounceOffPaddle((Paddle)pieceB);
+                	 ((Ball)pieceA).bounceOffPaddle((Paddle)pieceB); //alter ball path
                  }
                  if(pieceA instanceof Paddle && pieceB instanceof Powerup){
                 	 applyPowerup((Powerup)pieceB);
                  }
                  if(pieceA instanceof Paddle && pieceB instanceof Cat){
-                	 takeCatDamage((Cat)pieceB);
+                	 takeCatDamage((Cat)pieceB); //respond to successful nyan cat attack
                  }
                  return true; //collision has occurred
              }
          }
-  
+    	 
          return false;
+    }
+    
+    public void takeBlockDamage(Block block){
+    	 block.takeHit();
+    	 if(block.isDestroyed()) {removeBlock(block);}//if block is destroyed
     }
     
     public void takeCatDamage(Cat c){

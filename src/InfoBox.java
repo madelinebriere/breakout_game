@@ -13,12 +13,12 @@ public class InfoBox{
 	
 
 	public InfoBox(int size) {
-		Text text = new Text(10,size-65, "");
-		text.setFill(Color.ALICEBLUE);
+		Text text = new Text(150,size-13, "");
+		text.setFill(Color.BLACK);
 		text.setFont(Font.font("Cambria", 15));
 		myText = text;
-		myBox = new Rectangle(5, size-65,90,60);
-		myBox.setFill(Color.DARKCYAN);
+		myBox = new Rectangle(140, size-30,size-280,25);
+		myBox.setFill(Color.WHITE);
 		myBox.setArcWidth(7);
 		myBox.setArcHeight(7);;
 		myBox.setStroke(Color.BLACK);
@@ -38,52 +38,30 @@ public class InfoBox{
 		else {return false;}
 	}
 	
+	//getters and setters
 	public void setLevel(int level){
 		myLevel=level;
-		myText.setText(myText.getText()+"\nLevel: "+level);
+		myText.setText(myText.getText()+"   Level: "+level);
 	}
 	
 	public void setLives(int lives){
 		myLives=lives;
-		myText.setText(myText.getText()+"\nLives: "+lives);
+		myText.setText(myText.getText()+"   Lives: "+lives);
 	}
 	
 	public void setPoints(int points){
 		myPoints=points;
-		myText.setText(myText.getText()+"\nPoints: "+points);
+		myText.setText(myText.getText()+"   Points: "+points);
 	}
 
-	public Text getMyText() {
-		return myText;
-	}
-
-	public void setMyText(Text myText) {
-		this.myText = myText;
-	}
-	
-	public int getMyLevel() {
-		return myLevel;
-	}
-
-	public void setMyLevel(int myLevel) {
-		this.myLevel = myLevel;
-	}
-
-	public int getMyLives() {
-		return myLives;
-	}
-
-	public void setMyLives(int myLives) {
-		this.myLives = myLives;
-	}
-
-	public int getMyPoints() {
-		return myPoints;
-	}
-
-	public void setMyPoints(int myPoints) {
-		this.myPoints = myPoints;
-	}
+	public Text getMyText() {return myText;}
+	public void setMyText(Text myText) {this.myText = myText;}
+	public int getMyLevel() {return myLevel;}
+	public void setMyLevel(int myLevel) {this.myLevel = myLevel;}
+	public int getMyLives() {return myLives;}
+	public void setMyLives(int myLives) {this.myLives = myLives;}
+	public int getMyPoints() {return myPoints;}
+	public void setMyPoints(int myPoints) {this.myPoints = myPoints;}
 
 
 }

@@ -10,9 +10,6 @@ public class DoubleBlock extends Block{
 	}
 
 	@Override
-	public boolean isDestroyed() {
-		myHits--;
-		return true;
-	}
+	public void takeHit(){myHits--;}
 
 }
