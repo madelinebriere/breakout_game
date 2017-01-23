@@ -444,7 +444,13 @@ public class BreakoutWorld {
 		ballReset();
 		paddleReset();
 	}
-
+	
+	/**
+	 * The following three methods look liked repetitive code,
+	 * but are distinct in each middle line.
+	 * Each method makes a unique call to its own relevant
+	 * class to produce a new object.
+	 */
 	private void ballReset() {
 		removePiece(myBall);
 		myBall = Ball.buildStartBall(SIZE, myLevel);

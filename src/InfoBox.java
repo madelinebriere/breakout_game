@@ -3,6 +3,20 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+/**
+ * Class dedicated to holding information about the GameWorld,
+ * and returning it in a neat fashion for display in 
+ * BreakoutWorld
+ * 
+ * Attempts were made to connect this class to the GamePiece class
+ * so that updates would be covered by the general update code 
+ * in BreakoutWorld ... however, this class did not share enough 
+ * in common with other GamePieces to warrant connection
+ * 
+ * @author maddiebriere
+ *
+ */
+
 public class InfoBox {
 
 	private Text myText;
