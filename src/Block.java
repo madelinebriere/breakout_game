@@ -1,55 +1,86 @@
-import java.awt.Point;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Scanner;
+public abstract class Block extends GamePiece {
 
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+	public static final int BLOCK_POINTS = 10; // standard number of points per
+												// brick
 
-public abstract class Block extends GamePiece{
+	// Brick grid variables
+	public static final double BRICK_ROW_INC = 25; // distance between rows
+	public static final double BRICK_COL_INC = 70; // distance between cols
 
-
-	public static final int BLOCK_POINTS=10; //standard number of points per brick
-	
-	//Brick grid variables
-    public static final double BRICK_ROW_INC = 25; //distance between rows
-    public static final double BRICK_COL_INC = 70; // distance between cols
-	
-	protected int myHits; //how many hits the block can receive before being destroyed
-	protected int myPoints;//how many points the block is worth
-	protected Powerup myPower; //the powerup held by this block
+	protected int myHits; // how many hits the block can receive before being
+							// destroyed
+	protected int myPoints;// how many points the block is worth
+	protected Powerup myPower; // the powerup held by this block
+	private double myRow;
+	private double myCol;
 
 	public Block(double row, double col, String type) {
-		super(col*BRICK_COL_INC, row*BRICK_ROW_INC, type);
-		myPower=null;
+		super(col * BRICK_COL_INC, row * BRICK_ROW_INC, type);
+		myPower = null;
+		myRow = row;
+		myCol = col;
 	}
-	
+
 	/**
 	 * @return boolean, true if the block is destroyed
 	 */
-	public boolean isDestroyed(){
-		if(myHits<=0){return true;}
-		else return false;
+	public boolean isDestroyed() {
+		if (myHits <= 0) {
+			return true;
+		} else
+			return false;
 	}
-	
+
 	/**
-	 * Alters the block based on it's type (Each type of block must react to a collision in a unique way)
+	 * Alters the block based on it's type (Each type of block must react to a
+	 * collision in a unique way)
 	 */
 	public abstract void takeHit();
-	
+
 	@Override
 	public void update(int size, int level) {
-		//No movement necessary for blocks in this version of the game
+		// No movement necessary for blocks in this version of the game
 	}
 
-	//getters and setters
-    public int getMyHits() {return myHits;}
-	public void setMyHits(int myHits) {this.myHits = myHits;}
-	public int getMyPoints() {return myPoints;}
-	public void setMyPoints(int myPoints) {this.myPoints = myPoints;}
-	public Powerup getMyPower() {return myPower;}
-	public void setMyPower(Powerup myPower) {this.myPower = myPower;}
+	// getters and setters
+	public int getMyHits() {
+		return myHits;
+	}
 
+	public void setMyHits(int myHits) {
+		this.myHits = myHits;
+	}
+
+	public int getMyPoints() {
+		return myPoints;
+	}
+
+	public void setMyPoints(int myPoints) {
+		this.myPoints = myPoints;
+	}
+
+	public Powerup getMyPower() {
+		return myPower;
+	}
+
+	public void setMyPower(Powerup myPower) {
+		this.myPower = myPower;
+	}
+
+	public double getMyRow() {
+		return myRow;
+	}
+
+	public void setMyRow(double myRow) {
+		this.myRow = myRow;
+	}
+
+	public double getMyCol() {
+		return myCol;
+	}
+
+	public void setMyCol(double myCol) {
+		this.myCol = myCol;
+	}
 
 }

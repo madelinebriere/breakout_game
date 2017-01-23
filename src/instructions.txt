@@ -1,6 +1,5 @@
 1) The main goal of this game is to help Fido escape the Nyan Cat Attack! Fido's only weapon is his trusty, obstacle-destroying tennis ball
-2) Guide Fido and his paddle with the left and right keys! You can bounce the tennis ball left, up and right by hitting the left, middle and right portions 
-of the paddle (respectively)
+2) Guide Fido and his paddle with the left and right keys! You can bounce the tennis ball left, up and right by hitting the left, middle and right portions of the paddle (respectively)
 3) Destroy blocks, earn points, and collect falling powerups!
 4) Avoid falling nyan cats! They will steal your points
 5) Leveling up means more nyan cats, more bricks and a faster ball!

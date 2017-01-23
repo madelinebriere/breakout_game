@@ -1,23 +1,22 @@
 LEVEL DESCRIPTIONS:
 **Level 1: 
 Ball speed: Slow
-New powerup: Paddle power
+New powerup: Paddle powerup
 New paddle ability: Angled bounce off of sides of paddle
 
 **Level 2:
 Ball speed: Medium
-New powerup: Point power
-New paddle ability: "Portal" -- paddle can now travel from one side of the screen to the other via
-the side walls
+New powerup: Point powerup
+New paddle ability: "Portal" -- paddle can now travel from one side of the screen to the other via the side walls
 
 **Level 3:
 Ball speed: Fast
-New powerup: Life power
+New powerup: Life powerup
 New paddle ability: "Momentum" -- paddle speeds up as you travel in the same direction
 
 **Level 4:
 Ball speed: Impossible
-New powerup: Additional paddle power
+New powerup: Additional life powerup -- you need it!
 New paddle ability: None ... good luck!
 
 CHEAT KEYS:
