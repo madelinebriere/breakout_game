@@ -4,19 +4,23 @@ maddiebriere
 I started this assignment on January 9th and finished it on January 23rd, 2017. 
 
 # Estimated number of hours spent on project: 
-30 hours
+35 hours
 
 # Role: 
 All development
 
 #Online resources used:  
 JavaFX Game Tutorial https://carlfx.wordpress.com/2012/03/29/javafx-2-gametutorial-part-1/
+Pop-up tutorial: http://www.javafxtutorials.com/tutorials/creating-a-pop-up-window-in-javafx/
 
 #Start Class: 
 Runner
 
 #Test Class: 
 Runner & Alterations to BreakoutWorld
+**Note that most troubleshooting for this game involved launching it with different
+block configurations, power-ups, etc. to look for possible bugs. This was done
+by changing small things in each class accordingly.
 
 #Resources Files Required: 
 * blocks1.txt
@@ -32,39 +36,34 @@ From PLAN.txt
 My game is a Breakout spin-off in that the player controls a paddle (using the left and right keyboard keys) to bounce a ball, trying to destroy all of the destructible blocks on each level and avoid letting their ball fall off the bottom of the screen. 
 
 Players wrack up points when they destroy blocks and catch certain power-ups.
-As is commonplace with modern games, my version will become more and more difficult as you pass more levels. I hope to increase difficulty/complexity in at least four ways:
-1)	The speed of the ball will increase with each consecutive level, making it harder and harder to stop it from going off the bottom of the screen
+As is commonplace with modern games, my version becomes more and more difficult as you pass more levels. I increase difficulty/complexity in at least four ways:
+1)	The speed of the ball increases with each consecutive level, making it harder and harder to stop it from going off the bottom of the screen
 2)	The block grid becomes more complicated, with more blocks and a greater variety of blocks (including blocks that, for instance, drop different power-ups)
-3)	The paddle will gain a new ability with each level
+3)	The paddle gains a new ability with each level
 	a.	Level one: Ball bounces differently on the left, middle and right portions of the paddle
 	b.	Level two: Side portal appears allowing paddle to jump from side to side
 	c.	Level three: Paddle speeds up when traveling in same direction (“gains momentum”)
-4)	As the levels increase, more obstacles will fall from the top of the screen towards the paddle, making it increasingly more difficult to avoid getting hit and losing a life (see “Something Extra”) 
-I intend to place these blocks by row and column, reading in from a text file with a string of the desired picture file stored by row and column. 
-
-This means that two rows of six normal blocks will be drawn at the top of the game screen.
-The next levels will have more rows of blocks, with more interesting blocks. 
-
-This means that the bottom-most row of blocks is “protected” by two concrete blocks and two strong blocks are embedded in the grid structure.
+4)	As the levels increase, more nyan cats fall from the top of the screen towards the paddle, making it increasingly more difficult to avoid getting hit and losing a life (see “Something Extra”) 
+I've placed these blocks by row and column, reading in from a text file with a string of the desired picture file stored by row and column. 
 
 (See the "blocks" .txt files)
  
 
 Part 3: Blocks
-I intend to include at least four different types of blocks:
+I included four different types of blocks:
 1)	A “normal” block that is cleared after one hit, rewarding the player with a set number of points (e.g., 10 points)
 2)	A “strong” block that is cleared after TWO hits, rewarding the player with a set number of points (same number as the normal block)
 3)	A “concrete” block that cannot be cleared from the game (it remains as an obstacle for the entire level)
 4)	A “double” block that is cleared after one hit, just like a “normal” block, but rewards the player with double the points (e.g., 20 points)
 
 Part 4: Power-Ups
-I intend to include at least three power-ups that drop from blocks and activate when caught:
+I included three power-ups that drop from blocks and activate when caught:
 1)	Paddle size increase – A power-up that increases the size of the paddle temporarily
 2)	Life power-up – A power-up that gives you an extra life
 3)	Point power-up – A power-up that gives you a set number of extra points
 
 Part 5: Cheat keys
-The basic cheat keys I plan to include are as follows:
+The basic cheat keys are as follows:
 1)	When you press a number, the game should take you to that level (unless it is not a valid level)
 2)	When you press L (for lives), you get an extra life
 3)	When you press P (for points), you get an extra point
@@ -75,7 +74,7 @@ The basic cheat keys I plan to include are as follows:
 As my “something extra” element, I include Nyan Cats that fall from the top of the page to the bottom of the page. 
 If these obstacles hit the paddle, you lose a life and the level resets. 
 This is a substantial change on a game design level because it adds an extra layer of difficulty for the player.
-This is a substantial change on a programming level because it will require the addition of an entirely new subset of elements to the screen and 
+This is a substantial change on a programming level because it requires the addition of an entirely new subset of elements to the screen and 
 the constant update of their positions.
 
 #Known Bugs
