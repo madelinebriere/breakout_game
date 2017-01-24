@@ -4,6 +4,9 @@
  * a short amount of time. This class extends the GamePiece class, so it is
  * updated via its own ImageView.
  * 
+ * Very dependent upon this particular version of Breakout, in that all of its
+ * functionality is dependent upon other pieces (Blocks, Paddle, etc.)
+ * 
  * @author maddiebriere
  */
 
