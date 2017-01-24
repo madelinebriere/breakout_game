@@ -6,6 +6,9 @@ import javafx.scene.image.ImageView;
 
 /**
  * General class for any piece in game Based on Sprite class by Carl Dea (cdea)
+ * Most of the Objects used in BreakoutWorld are instances of GamePiece. 
+ * Instances of GamePiece have an ImageView which can be updated by position to
+ * simulate animation. 
  * 
  * @author maddiebriere
  *

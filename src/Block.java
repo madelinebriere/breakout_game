@@ -1,5 +1,24 @@
+/**
+ * The Block class is the superclass for all of the subclass __Block classes
+ * 
+ * It gives each Block a certain number of hits and points, a power-up and its
+ * position by row and column. The Block class is an extension of the GamePiece 
+ * class, meaning that it is updated via its ImageView variable.
+ * 
+ * All blocks are able to "take a hit", that is, react uniquely to being hit,
+ * and to know if they have been destroyed or not.
+ * 
+ * This class assumes all Blocks are represented in certain rows and columns (a grid),
+ * and that each Block has a specific image associated with it.
+ * It also assumes that each block requires updating (via the update method).
+ * 
+ * 
+ * @author maddiebriere
+ *
+ */
 public abstract class Block extends GamePiece {
 
+	
 	public static final int BLOCK_POINTS = 10; // standard number of points per
 												// brick
 
@@ -7,6 +26,17 @@ public abstract class Block extends GamePiece {
 	public static final double BRICK_ROW_INC = 25; // distance between rows
 	public static final double BRICK_COL_INC = 70; // distance between cols
 
+	
+	/**
+	 * These variables have been declared as protected because 
+	 * a public declaration would give unwarranted control to 
+	 * outside classes and a private declaration would hide
+	 * these variables from child classes -- the latter is 
+	 * extremely non-viable because these variables have
+	 * specific functions for each child class --> it makes
+	 * more sense for them to have protected access to these
+	 * variables
+	 */
 	protected int myHits; // how many hits the block can receive before being
 							// destroyed
 	protected int myPoints;// how many points the block is worth

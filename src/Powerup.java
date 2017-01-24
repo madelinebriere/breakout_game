@@ -1,3 +1,12 @@
+/**
+ * The Powerup class produces powerups that, when collected by a Paddle
+ * (when they collide with a Paddle) can give the game player special abilities for 
+ * a short amount of time. This class extends the GamePiece class, so it is
+ * updated via its own ImageView.
+ * 
+ * @author maddiebriere
+ */
+
 import java.util.ArrayList;
 import java.util.Random;
 

@@ -1,3 +1,10 @@
+/**
+ * StrongBlock class extends the Block class, and creates blocks
+ * that require more than one hit to be destroyed.
+ * @author maddiebriere
+ *
+ */
+
 
 public class StrongBlock extends Block {
 

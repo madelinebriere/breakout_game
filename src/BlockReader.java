@@ -3,6 +3,16 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * This class is solely used for reading in the Block grids for each level
+ * from corresponding text files. It assigned each row and column of 
+ * Blocks via the .gif file written (e.g., concrete.gif). Refer to the 
+ * given blocks.txt files for examples.
+ * 
+ * @author maddiebriere
+ *
+ */
+
 public class BlockReader {
 
 	/**

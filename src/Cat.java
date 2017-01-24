@@ -1,4 +1,16 @@
 import java.util.Random;
+/**
+ * A class that defines a "Cat" object, that updates by "falling" down
+ * the screen. This class has narrow applications in that most of the implementation
+ * is very specific to this particular version of Breakout.
+ * 
+ * New Objects of this class can be made using the constructor, or the buildCat()
+ * method, which generates cats at random.
+ * 
+ * @author maddiebriere
+ *
+ */
+
 
 public class Cat extends GamePiece {
 
