@@ -5,10 +5,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 /**
- * General class for any piece in game Based on Sprite class by Carl Dea (cdea)
+ * General class for any piece in game 
+ * Based on Sprite class by Carl Dea (cdea)
  * Most of the Objects used in BreakoutWorld are instances of GamePiece. 
  * Instances of GamePiece have an ImageView which can be updated by position to
  * simulate animation. 
+ * 
+ * All GamePieces have a collide method that registers when two ImageViews overlap.
+ * Likewise, the update method is important because every GamePiece updates in a
+ * unique way -- producing different actors/actions.
  * 
  * @author maddiebriere
  *
@@ -31,15 +36,10 @@ public abstract class GamePiece {
 	 * Check if this GamePiece has collided with another GamePiece
 	 */
 	public boolean collide(GamePiece other) {
-		if (this.myImage.intersects(other.myImage.getBoundsInLocal())) {
-			return true;
-		} else {
-			return false;
-		}
+		return this.myImage.intersects(other.myImage.getBoundsInLocal());
 	}
 
-	/**
-	 * 
+	/** 
 	 * @param pieces,
 	 *            a List of pieces Add all pieces to a Group in some scene
 	 */

@@ -1,3 +1,8 @@
+/**
+ * Subclass of Block, creates indestructible Blocks
+ * @author maddiebriere
+ *
+ */
 
 public class ConcreteBlock extends Block {
 

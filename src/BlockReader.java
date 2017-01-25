@@ -5,9 +5,13 @@ import java.util.Scanner;
 
 /**
  * This class is solely used for reading in the Block grids for each level
- * from corresponding text files. It assigned each row and column of 
- * Blocks via the .gif file written (e.g., concrete.gif). Refer to the 
+ * from corresponding text files. It assigns each row and column of 
+ * Blocks via the .gif file written in each slot (e.g., concrete.gif). Refer to the 
  * given blocks.txt files for examples.
+ * 
+ * Note that the Blocks read in are limited -- anything that is not
+ * expected will result in a missing block. The input must be specifically formatted
+ * as shown in the example.
  * 
  * @author maddiebriere
  *

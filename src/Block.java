@@ -12,21 +12,14 @@
  * and that each Block has a specific image associated with it.
  * It also assumes that each block requires updating (via the update method).
  * 
- * 
  * @author maddiebriere
- *
  */
 public abstract class Block extends GamePiece {
 
-	
-	public static final int BLOCK_POINTS = 10; // standard number of points per
-												// brick
-
+	public static final int BLOCK_POINTS = 10; // standard # points
 	// Brick grid variables
 	public static final double BRICK_ROW_INC = 25; // distance between rows
 	public static final double BRICK_COL_INC = 70; // distance between cols
-
-	
 	/**
 	 * These variables have been declared as protected because 
 	 * a public declaration would give unwarranted control to 
@@ -37,8 +30,7 @@ public abstract class Block extends GamePiece {
 	 * more sense for them to have protected access to these
 	 * variables
 	 */
-	protected int myHits; // how many hits the block can receive before being
-							// destroyed
+	protected int myHits; // how many hits the block can receive
 	protected int myPoints;// how many points the block is worth
 	protected Powerup myPower; // the powerup held by this block
 	private double myRow;
@@ -55,10 +47,7 @@ public abstract class Block extends GamePiece {
 	 * @return boolean, true if the block is destroyed
 	 */
 	public boolean isDestroyed() {
-		if (myHits <= 0) {
-			return true;
-		} else
-			return false;
+		return myHits <= 0;
 	}
 
 	/**

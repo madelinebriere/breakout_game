@@ -1,3 +1,10 @@
+/**
+ * Extension of Block class, produces normal blocks that are destroyed
+ * in one hit and drop a normal number of points. 
+ * 
+ * @author maddiebriere
+ *
+ */
 
 public class NormalBlock extends Block {
 

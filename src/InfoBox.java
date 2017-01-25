@@ -55,11 +55,7 @@ public class InfoBox {
 	 * @return true if something has changed, false otherwise
 	 */
 	public boolean changed(int level, int points, int lives) {
-		if (level != myLevel || points != myPoints || lives != myLives) {
-			return true;
-		} else {
-			return false;
-		}
+		return (level != myLevel || points != myPoints || lives != myLives);
 	}
 
 	// getters and setters

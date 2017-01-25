@@ -1,6 +1,6 @@
 /**
  * Paddle class produces an instance of GamePiece that is able to move from side 
- * side on the bottom of the screen, deflecting Ball objects. It can have 
+ * to side on the bottom of the screen, deflecting Ball objects. It can have 
  * different images depending on its function, and keeps track of its movement
  * via doubles for motion in the left and right directions.
  * 

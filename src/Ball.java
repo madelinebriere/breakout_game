@@ -1,6 +1,22 @@
 import javafx.geometry.Bounds;
 import javafx.scene.shape.Rectangle;
-
+/**
+ * Ball class generates a "Ball" object that can bounce off
+ * of walls and into other objects. It holds information about velocity,
+ * position, photo, etc. The Ball class is an extension of the 
+ * GamePiece class, which gives it a specific ImageView.
+ * 
+ * Objects of this class are created and then updated via their
+ * own ImageViews. In this manner, they can be animated and interact
+ * with other objects (walls, blocks, paddles).
+ * 
+ * One point of inflexibility in this class is the fact that the speed of the ball
+ * is just extrapolated from each component in any situation -- it is challenging
+ * to actually set any direction/speed without messing up the code.
+ * 
+ * @author maddiebriere
+ *
+ */
 public class Ball extends GamePiece {
 	public static final int BALL_START_X = 300;
 	public static final int BALL_START_Y = 300;

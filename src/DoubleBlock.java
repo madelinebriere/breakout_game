@@ -1,3 +1,9 @@
+/**
+ * Subclass of Block, creates a Block worth double points
+ * 
+ * @author maddiebriere
+ *
+ */
 public class DoubleBlock extends Block {
 
 	public static final String DOUBLE_PIC = "double.gif";

@@ -1,7 +1,14 @@
 import java.util.*;
 
 /**
- * The GameManager keeps track of all of the GamePieces in play
+ * The GameManager keeps track of all of the GamePieces in play.
+ * It has a List to hold all GamePieces in action, a collision list 
+ * for checking collision and a clean-up list for removing items from the 
+ * scene. Creating a GameManager object allows access to all of these capabilities.
+ * 
+ * A single instance of the GameManager class is used in BreakoutWorld to keep
+ * track of the GamePieces for the entire game -- all changes are made via the 
+ * GameManager's method.
  * 
  * @author Carl Dea (cdea), slightly modified by maddiebriere
  */

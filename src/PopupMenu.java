@@ -1,3 +1,20 @@
+/**
+ * Class intended for use in initial pop-up description and final fail popup
+ * Takes in text files for display information.
+ * Pretty inflexible in that it is geared largely towards use in the 
+ * BreakoutWorld class only. 
+ * 
+ * Based on
+ * http://www.javafxtutorials.com/tutorials/creating-a-pop-up-window-in-
+ * javafx/
+ * 
+ * @author maddiebriere
+ */
+
+
+/**
+ * Refactor labelling part
+ */
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,12 +34,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class PopupMenu {
-	/*
-	 * Class intended for use in initial pop-up description and final fail popup
-	 * Based on
-	 * http://www.javafxtutorials.com/tutorials/creating-a-pop-up-window-in-
-	 * javafx/
-	 */
+
 	public static final int DEFAULT_WIDTH = 480;
 	public static final int DEFAULT_SIZE = 500;
 

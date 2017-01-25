@@ -2,7 +2,7 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 
 /**
- * The main driver of the game.
+ * The main driver of the game. Launches the program.
  * 
  * @author Carl Dea Modified by Maddie Briere
  */

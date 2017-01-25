@@ -15,6 +15,18 @@ import javafx.util.Duration;
 
 /**
  * Basic gameloop application, implementing an adaptation of Breakout 
+ * This class creates a GameWorld for Breakout, adding in each GamePiece
+ * required (Ball, Paddle, Block grid, Cats, etc.) and updates them
+ * using an event handler. Changes to this update system must be made via 
+ * the EventHandler initialized.
+ * 
+ * Note that this system also keeps several of its important GamePiece objects
+ * as global variables (e.g., myPaddle, myBall) for quick access. All GamePieces
+ * are stored using the GameManager object. This redundancy is useful but
+ * can also produce points of confusion and bugs, where an object is removed from
+ * one list but not the other.
+ * 
+ * 
  * Based on code by Carl Dea (cdea)
  * 
  * @author maddiebriere
