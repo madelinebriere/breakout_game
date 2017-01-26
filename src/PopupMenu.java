@@ -1,6 +1,5 @@
 // This entire file is part of my masterpiece.
 // Madeline Briere
-
 /**
  * This class creates a basic popup, with its subclasses adding more
  * specificity to the actual content of the popup. It is based on

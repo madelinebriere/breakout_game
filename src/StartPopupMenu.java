@@ -1,6 +1,5 @@
 // This entire file is part of my masterpiece.
 // Madeline Briere
-
 /**
  * This class is an extension of PopupMenu that is invoked
  * at the start of the game. It searches for the files:
