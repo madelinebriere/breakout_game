@@ -1,19 +1,44 @@
+// This entire file is part of my masterpiece.
+// Madeline Briere
+
 /**
- * Class intended for use in initial pop-up description and final fail popup
- * Takes in text files for display information.
- * Pretty inflexible in that it is geared largely towards use in the 
- * BreakoutWorld class only. 
- * 
- * Based on
+ * This class creates a basic popup, with its subclasses adding more
+ * specificity to the actual content of the popup. It is based on
  * http://www.javafxtutorials.com/tutorials/creating-a-pop-up-window-in-
  * javafx/
  * 
+ * An important element of this design is that it relies upon
+ * the input prefix to access all of the files. That is,
+ * if you enter "fido," then the files accessed will be 
+ * fidoinstructions.txt, fidoinfo.txt, etc. This is true for its 
+ * subclasses as well.
+ * 
+ * Why this is part of my code masterpiece:
+ *
+ * The prefix read in by the PopupMenu constructor
+ * allows a user to decide which files will be read in -
+ * hence, if the user saves their files with each corresponding
+ * prefix, they can access the information for several different
+ * games, even programs in general
+ *  -- this allows a great amount of flexibility and makes this
+ *  code extremely reusable
+ * 
+ * Subclasses of this class can do almost anything -- they simply
+ * look for respective files with the correct prefix and set up
+ * the popup as requested (e.g., title, textbook, button). 
+ * 
+ * Moreover, this class is dedicated to a single, clear purpose --
+ * to create and fill a popup-menu. It is not bogged down by unneeded
+ * dependencies. It deals with all of the implementation without outside
+ * communication -- following the "Tell the Other Guy" motto
+ * 
+ * Finally, this code is readable and concise. 
+ * Each available method is named so
+ * that a user extending this class knows what capabilities they
+ * have inherited. Likewise, following the DRY motto, no code is repeated.
+ * Each method serves a clear and distinct purpose.
+ * 
  * @author maddiebriere
- */
-
-
-/**
- * Refactor labelling part
  */
 
 import java.io.File;
@@ -27,192 +52,144 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-public class PopupMenu {
+public abstract class PopupMenu {
 
-	public static final int DEFAULT_WIDTH = 480;
+	public static final int TEXT_WIDTH = 480;
 	public static final int DEFAULT_SIZE = 500;
 
-	private Stage thestage;
-	private String startfile;
-	private String infofile;
-	private String gamename;
-	private String character;
-	private String message;
+	private Stage myStage;
+	private String myTitle;
+	private String myPrefix;
 
-	public PopupMenu(String startfile, String infofile, String gamename, String character, String message) {
-		thestage = new Stage();
-		this.startfile = startfile;
-		this.infofile = infofile;
-		this.gamename = gamename;
-		this.character = character;
-		this.message = message;
+
+	public PopupMenu(String prefix, String title) {
+		myStage = new Stage();
+		myPrefix = prefix;
+		myTitle = title;
 	}
 
-	public static void fidoMenu() {
-		PopupMenu popup = new PopupMenu("src/instructions.txt", "src/info.txt", "Fido's Breakout", "fido.gif",
-				"Can you help Fido escape a Nyan Cat Attack?");
-		popup.startMenu();
-		popup.infoMenu();
+	public void initialize() {
+		setStage(buildScene());
 	}
 
-	public void startMenu() {
-
-		menu(false, startfile);
+	private void setStage(Scene scene) {
+		myStage.setTitle(myTitle);
+		myStage.setScene(scene);
+		myStage.setMinWidth(DEFAULT_SIZE);
+		myStage.showAndWait();
 	}
 
-	public void infoMenu() {
-		menu(true, infofile);
+	private Scene buildScene() {
+		FlowPane pane = createAndFillPane(generateContent());
+		return new Scene(pane, DEFAULT_SIZE, DEFAULT_SIZE);
+	}
+	
+	/**
+	 * Unique to each popup -- must be implemented by
+	 * any subclass
+	 * @return an ArrayList of all Nodes to be added to the menu
+	 */
+	protected abstract ArrayList<Node> generateContent();
 
+	protected String[] readFileByLine(String fileName) {
+		Scanner scan = generateScanner(fileName);
+		ArrayList<String> lines = new ArrayList<String>();
+		while (scan.hasNextLine()) {
+			lines.add(scan.nextLine());
+		}
+		scan.close();
+		String[] toRet = new String[lines.size()];
+		return lines.toArray(toRet);
 	}
 
-	// boolean true if this is the final screen
-	public void menu(boolean finalScreen, String file) {
-		String instruction = readInstructions(file);
-		ArrayList<Node> labels = generateLabels(finalScreen, instruction);
-		FlowPane pane = createAndFillPane(labels);
-		Scene scene = new Scene(pane, DEFAULT_SIZE, DEFAULT_SIZE);
-		setStage(scene);
-
+	protected String readFileInFull(String fileName) {
+		return arrayToString(readFileByLine(fileName));
 	}
 
-	public void setStage(Scene scene) {
-		thestage.setTitle(gamename);
-		thestage.setScene(scene);
-		thestage.setMinWidth(DEFAULT_SIZE);
-		thestage.showAndWait();
-	}
-
-	public ArrayList<Node> generateLabels(boolean finalScreen, String instruction) {
-		ArrayList<Node> labels = new ArrayList<Node>();
-		if (!finalScreen) {
-			labels.addAll(characterLabels(gamename, character, message));
-			labels.add(createTextArea(instruction));
-		} // if start menu, read instructions and draw character
-		else {
-			labels.addAll(generateObjectLabels());
-			labels.add(generateLevelInfo());
-		} // else show information and objects
-		labels.add(createPageButton(finalScreen));
-		return labels;
-	}
-
-	private ArrayList<Label> characterLabels(String gameName, String characterFile, String message) {
-		Label lbl = new Label("Welcome to " + gameName);
-		lbl.setFont(Font.font("Cambria", 20));
-		Image image = new Image(getClass().getResourceAsStream(characterFile));
-		Label character = new Label(message, new ImageView(image));
-		ArrayList<Label> toRet = new ArrayList<Label>();
-		toRet.add(lbl);
-		toRet.add(character);
+	private String arrayToString(String[] s) {
+		String toRet = "";
+		for (int i = 0; i < s.length; i++) {
+			toRet += s[i] + "\n";
+		}
 		return toRet;
 	}
 
-	private String readInstructions(String fileName) {
-		File file = new File(fileName);
+	private Scanner generateScanner(String fileName) {
 		Scanner scan = new Scanner("");
 		try {
-			scan = new Scanner(file);
+			scan = new Scanner(new File(fileName));
 		} catch (FileNotFoundException e) {
 			System.out.println("Scanner file not found");
 		}
-		String instruction = "";
-		while (scan.hasNextLine()) {
-			instruction += scan.nextLine() + "\n";
-		}
-		scan.close();
-		return instruction;
+		return scan;
 	}
 
-	private TextArea createTextArea(String instruction) {
+	protected TextArea generateText(String instruction) {
 		TextArea text = new TextArea(instruction);
 		text.setWrapText(true);
-		text.setMaxWidth(DEFAULT_WIDTH);
+		text.setMaxWidth(TEXT_WIDTH);
 		text.setEditable(false);
 		return text;
 	}
 
-	private ArrayList<Label> generateObjectLabels() {
-		ArrayList<Label> labels = new ArrayList<Label>();
-		labels.add(generateSingleLabel("normal.gif")); // normal brick
-		labels.add(generateSingleLabel("strong.gif")); // strong brick
-		labels.add(generateSingleLabel("double.gif"));
-		labels.add(generateSingleLabel("concrete.gif"));
-		labels.add(generateSingleLabel("paddlepower.gif"));
-		labels.add(generateSingleLabel("pointpower.gif"));
-		labels.add(generateSingleLabel("lifepower.gif"));
-		return labels;
+	protected ArrayList<Label> generateLabels(String[] fileInput) {
+		ArrayList<Label> toRet = new ArrayList<Label>();
+		for (int i = 0; i < fileInput.length; i++) {
+			toRet.add(generateLabel(fileInput[i]));
+		}
+		return toRet;
 	}
 
-	private Label generateSingleLabel(String name) {
-		Label label = new Label();
-		Image image = new Image(getClass().getResourceAsStream(name));
-
-		// Blocks
-		if (name.equals("normal.gif")) {
-			label = new Label("Normal Block: 10 points, 1 hit", new ImageView(image));
-		}
-		if (name.equals("strong.gif")) {
-			label = new Label("Strong Block: 10 points, 2 hits", new ImageView(image));
-		}
-		if (name.equals("double.gif")) {
-			label = new Label("Double Block: 20 points, 1 hit", new ImageView(image));
-		}
-		if (name.equals("concrete.gif")) {
-			label = new Label("Concrete Block: No points, indestructible", new ImageView(image));
-		}
-
-		// Powerups
-		if (name.equals("paddlepower.gif")) {
-			label = new Label("Larger paddle", new ImageView(image));
-		}
-		if (name.equals("pointpower.gif")) {
-			label = new Label("+50 points", new ImageView(image));
-		}
-		if (name.equals("lifepower.gif")) {
-			label = new Label("+1 life", new ImageView(image));
-		}
-		return label;
-	}
-
-	private TextArea generateLevelInfo() {
-		String info = readInstructions(infofile);
-		TextArea text = createTextArea(info);
-		text.setMaxHeight(DEFAULT_WIDTH / 3);
-		return text;
+	/**
+	 * A label is generate for a single string line formatted:
+	 * name.gif This is my descriptive line.
+	 * Where name.gif is an image file name
+	 * 
+	 * @param line
+	 * a string representing a single line
+	 * @return a Label with the description of the item
+	 * and an ImageView of the item
+	 */
+	protected Label generateLabel(String line) {
+		int index = line.indexOf(" ");
+		String name = line.substring(0, index);
+		String description = line.substring(index + 1);
+		return new Label(description, new ImageView(name));
 	}
 
 	private FlowPane createAndFillPane(ArrayList<Node> labels) {
-		// make pane
 		FlowPane pane = new FlowPane();
-		pane.setHgap(20);
-		pane.setVgap(20);
-
-		// set background color of pane
-		pane.setStyle("-fx-background-color:lightcyan;-fx-padding:10px;");
-
-		// add everything to pane
+		stylePane(pane);
 		pane.getChildren().addAll(labels);
 		return pane;
 	}
+	
+	private void stylePane(FlowPane pane){
+		pane.setHgap(20);
+		pane.setVgap(20);
+		pane.setStyle("-fx-background-color:lightcyan;-fx-padding:10px;");
+	}
 
-	private Button createPageButton(boolean finalScreen) {
-		Button button;
-		if (finalScreen) {
-			button = new Button("Start Game");
-		} else {
-			button = new Button("Next page");
-		}
+	protected Button generatePageButton(String buttonMessage) {
+		Button button = new Button(buttonMessage);
 		button.setOnAction(e -> StartButtonClicked(e));
 		return button;
 	}
 
-	public void StartButtonClicked(ActionEvent e) {
-		thestage.close();
+	protected void StartButtonClicked(ActionEvent e) {
+		myStage.close();
 	}
+	
+	public String getMyPrefix() {
+		return myPrefix;
+	}
+
+	public void setMyPrefix(String myPrefix) {
+		this.myPrefix = myPrefix;
+	}
+	
 }
