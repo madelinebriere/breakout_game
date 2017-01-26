@@ -12,13 +12,13 @@ public class NormalBlock extends Block {
 
 	public NormalBlock(double x, double y) {
 		super(x, y, NORMAL_PIC);
-		myHits = 1; // destroyed in one hit
-		myPoints = BLOCK_POINTS; // Normal number of points
+		setMyHits(1); // destroyed in one hit
+		setMyPoints(BLOCK_POINTS); // Normal number of points
 	}
 
 	@Override
 	public void takeHit() {
-		myHits--;
+		setMyHits(getMyHits()-1);
 	}
 
 }

@@ -1,0 +1,7 @@
+normal.gif Normal Block: 10 points, 1 hit
+strong.gif Strong Block: 10 points, 2 hits
+double.gif Double Block: 20 points, 1 hit
+concrete.gif Concrete Block: No points, indestructible
+paddlepower.gif Larger paddle
+pointpower.gif +50 points
+lifepower.gif +1 life

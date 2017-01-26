@@ -1,0 +1,2 @@
+fido.gif Welcome to Fido's Breakout! 
+Can you help Fido escape a Nyan Cat Attack?

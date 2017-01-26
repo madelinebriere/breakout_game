@@ -12,13 +12,13 @@ public class StrongBlock extends Block {
 
 	public StrongBlock(double row, double col) {
 		super(row, col, STRONG_PIC);
-		myHits = 2; // destroyed in TWO hits
-		myPoints = BLOCK_POINTS; // Normal number of points
+		setMyHits(2); // destroyed in TWO hits
+		setMyPoints(BLOCK_POINTS); // Normal number of points
 	}
 
 	@Override
 	public void takeHit() {
-		myHits--;
+		setMyHits(getMyHits()-1);
 	}
 
 }

@@ -1,8 +1,3 @@
-// This entire file is part of my masterpiece.
-// Maddie Briere
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 /**
  * A class that defines a "Cat" object, that updates by "falling" down
@@ -15,7 +10,6 @@ import java.util.Random;
  * @author maddiebriere
  *
  */
-
 
 public class Cat extends GamePiece {
 	public static final int DEFAULT_TIME = 2000;

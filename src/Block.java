@@ -20,19 +20,15 @@ public abstract class Block extends GamePiece {
 	// Brick grid variables
 	public static final double BRICK_ROW_INC = 25; // distance between rows
 	public static final double BRICK_COL_INC = 70; // distance between cols
+
 	/**
-	 * These variables have been declared as protected because 
-	 * a public declaration would give unwarranted control to 
-	 * outside classes and a private declaration would hide
-	 * these variables from child classes -- the latter is 
-	 * extremely non-viable because these variables have
-	 * specific functions for each child class --> it makes
-	 * more sense for them to have protected access to these
-	 * variables
+	 * Changed from protected to private
+	 * per explanation from Duvall on 
+	 * protected vs. private and software design
 	 */
-	protected int myHits; // how many hits the block can receive
-	protected int myPoints;// how many points the block is worth
-	protected Powerup myPower; // the powerup held by this block
+	private int myHits; // how many hits the block can receive
+	private int myPoints;// how many points the block is worth
+	private Powerup myPower; // the powerup held by this block
 	private double myRow;
 	private double myCol;
 

@@ -8,7 +8,9 @@ import javafx.stage.Stage;
  */
 public class Runner extends Application {
 
-	BreakoutWorld world = new BreakoutWorld(60, "Breakout");
+	private BreakoutWorld world = new BreakoutWorld(60, "Breakout");
+	private StartPopupMenu start = new StartPopupMenu("fido", "Fido's Breakout");
+	private InfoPopupMenu info = new InfoPopupMenu("fido", "Fido's Breakout");
 
 	/**
 	 * @param args
@@ -21,7 +23,8 @@ public class Runner extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 
-		PopupMenu.fidoMenu();// start menu
+		start.initialize();
+		info.initialize();
 		world.initialize(primaryStage);
 		primaryStage.show();
 		world.beginGameLoop();
