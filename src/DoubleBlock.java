@@ -11,7 +11,7 @@ public class DoubleBlock extends Block {
 	public DoubleBlock(double row, double col) {
 		super(row, col, DOUBLE_PIC);
 		setMyHits(1); // destroyed in one hit
-		setMyHits(2 * BLOCK_POINTS); // Normal number of points
+		setMyPoints(2 * BLOCK_POINTS); // Normal number of points
 	}
 
 	@Override
